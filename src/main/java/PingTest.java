@@ -1,13 +1,28 @@
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class PingTest {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		initClasspath();
-
+	private static final String USERNAME = "dbi";
+	private static final String PASSWORD = "dbi_pass";
+	private static final String CONN_STRING = "jdbc:mysql://192.168.15.30/cpa";
+	
+	public static void main(String[] args) throws SQLException {
+		
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
 	}
-
+/*
 	static void initClasspath() {
 		String homeDirectory = System.getProperty("user.home");
 		try {
@@ -18,4 +33,5 @@ public class PingTest {
 			e.printStackTrace();
 		}
 	}
+	*/
 }
