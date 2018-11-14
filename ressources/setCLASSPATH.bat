@@ -1,0 +1,1 @@
+shell> setenv CLASSPATH ../mysql-connector-java-8.0.13/mysql-connector-java-8.0.13.jar:$CLASSPATH
