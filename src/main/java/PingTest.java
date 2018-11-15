@@ -38,11 +38,11 @@ public class PingTest {
 		
 		while (rlt.next())
 		{
-			System.out.printf("%10s | ",rlt.getString("cid"));
-			System.out.printf("%10s | ",rlt.getString("pid"));
-			System.out.printf("%10s | ",rlt.getString("cname"));
-			System.out.printf("%10s | ",rlt.getString("city")+" | ");
-			System.out.printf("%10s |\n",rlt.getString("discnt"));				
+			System.out.printf("%6s | ",rlt.getString("cid"));
+			System.out.printf("%5s | ",rlt.getString("pid"));
+			System.out.printf("%8s | ",rlt.getString("cname"));
+			System.out.printf("%8s | ",rlt.getString("city"));
+			System.out.printf("%4s |\n",rlt.getString("discnt"));				
 		}
 	}
 	
