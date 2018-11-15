@@ -19,19 +19,26 @@ public class PingTest {
 			System.out.println("Connected!");
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 			if (conn != null) {
-				conn.close();
+				//conn.close();
 			}
+		}
+		Statement stmt = conn.createStatement();
+		ResultSet rlt = stmt.executeQuery("select * from customers");
+		
+		while (rlt.next())
+		{
+			System.out.print(rlt.getString("cid") + " | ");
+			System.out.println(rlt.getString("cname"));
+			
 		}
 		
 		
 	}
 	
-	public ResultSet executeQuery (String sql) throws SQLException{
-		return null;
-		
-	}
+	
 /*
 	static void initClasspath() {
 		String homeDirectory = System.getProperty("user.home");
