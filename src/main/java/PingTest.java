@@ -13,29 +13,37 @@ public class PingTest {
 	
 	public static void main(String[] args) throws SQLException {
 		
-		Connection conn = null;
+		Connection conn = null; 
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			System.out.println("Connected!");
+			
+			sqlQuery(conn);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		finally {
 			if (conn != null) {
-				//conn.close();
+				conn.close();
 			}
-		}
+		}	
+		
+	}
+	
+	public static void sqlQuery(Connection conn) throws SQLException
+	{
 		Statement stmt = conn.createStatement();
-		ResultSet rlt = stmt.executeQuery("select * from customers");
+		ResultSet rlt = stmt.executeQuery("select * from customers, products");
 		
 		while (rlt.next())
 		{
-			System.out.print(rlt.getString("cid") + " | ");
-			System.out.println(rlt.getString("cname"));
-			
+			System.out.printf("%10s | ",rlt.getString("cid"));
+			System.out.printf("%10s | ",rlt.getString("pid"));
+			System.out.printf("%10s | ",rlt.getString("cname"));
+			System.out.printf("%10s | ",rlt.getString("city")+" | ");
+			System.out.printf("%10s |\n",rlt.getString("discnt"));				
 		}
-		
-		
 	}
 	
 	
