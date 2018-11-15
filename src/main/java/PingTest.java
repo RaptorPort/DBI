@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -23,6 +24,13 @@ public class PingTest {
 				conn.close();
 			}
 		}
+		
+		
+	}
+	
+	public ResultSet executeQuery (String sql) throws SQLException{
+		return null;
+		
 	}
 /*
 	static void initClasspath() {
