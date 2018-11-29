@@ -1,4 +1,10 @@
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,10 +18,12 @@ public class PingTest {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private static final String CONN_STRING = "jdbc:mysql://192.254.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
-		
+		createINFILEtxtAccounts(10);
+		System.out.println("INFILE check");
+
 		Connection conn = null; 
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
@@ -24,7 +32,7 @@ public class PingTest {
 			initDBschema(conn);
 			TimeUnit.SECONDS.sleep(20);
 			long startTime = System.currentTimeMillis()/100;
-			init_tps_DBString(conn, 1);
+			init_tps_DBinline(conn, 1);
 			long endTime = System.currentTimeMillis()/100;
 			long timeElapsed = endTime - startTime;
 			System.out.println("Execution time in Seconds: " + timeElapsed);
@@ -58,13 +66,13 @@ public class PingTest {
 	public static void initDBschema(Connection conn) throws SQLException
 	{
 		Statement stmt = conn.createStatement();
-		/*stmt.executeUpdate(
-				"drop table "
+		stmt.executeUpdate(
+				"drop table if exists "
 				+ "test.branches, "
 				+ "test.accounts, "
 				+ "test.history, "
 				+ "test.tellers; "
-				);*/
+				);
 		stmt.executeUpdate(
 		"create table branches"
 		+ "( branchid int not null, "
@@ -186,6 +194,58 @@ public class PingTest {
 		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
 		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
 		
+		String query = "insert into accounts values ";
+		Statement stmt2 = conn.createStatement();
+		query += "(" + 1 + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")";
+		for (int i = 2; i <= n*100000; i++) {
+			query += ", (" + i + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")";
+		}
+		stmt2.executeUpdate(query);
+		conn.commit(); 
+		System.out.println("Accounts DONE");
+		
+		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
+		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
+		//richtigen Länge für TELLERNAME und ADDRESS
+		stmt = conn.prepareStatement( 
+				"insert into tellers values (?, ?, 0, ?, ?)"
+				);
+		for (int i = 1; i <= n*10; i++) {
+			stmt.setInt(1, i);
+			stmt.setString(2, NAME20);
+			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
+			stmt.setString(4, ADDRESS68);
+			stmt.executeUpdate();
+		}
+		conn.commit(); 
+		System.out.println("Tellers DONE");
+		//0 Tupel in der HISTORY-Relation.
+	}
+	
+	public static void init_tps_DBbatch(Connection conn, int n) throws SQLException {	 
+		Random zufall = new Random(); // neues Random Objekt, namens zufall
+		 
+		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
+		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
+		final String NAME20 = "NAME2001234567890123";
+		final String CMMNT30 = "CMMNT1234567891234567891234567";
+		
+		PreparedStatement stmt = conn.prepareStatement( 
+				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
+				);
+		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
+		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
+		for (int i = 1; i <= n; i++) {
+			stmt.setInt(1, i);
+			stmt.executeUpdate();
+		}
+		conn.commit();
+		System.out.println("Branches DONE");
+	
+		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
+		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
+		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
+		
 		Statement stmt2 = conn.createStatement();
 		for (int i = 1; i <= n*100000; i++) {
 			stmt2.addBatch( "insert into accounts values (" + i + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")");
@@ -210,5 +270,36 @@ public class PingTest {
 		conn.commit(); 
 		System.out.println("Tellers DONE");
 		//0 Tupel in der HISTORY-Relation.
+	}
+	
+	private static void createINFILEtxtAccounts(int n) {
+		Random zufall = new Random(); // neues Random Objekt, namens zufall
+		 
+		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
+		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
+		final String NAME20 = "NAME2001234567890123";
+		final String CMMNT30 = "CMMNT1234567891234567891234567";
+		
+		try (Writer txt = new BufferedWriter(new OutputStreamWriter(
+	              new FileOutputStream("INFILEaccounts.txt"), "ASCII"))) {
+			for (int i = 1; i <= n*100000; i++) {
+				txt.write(i + "\t" + NAME20 + "\t" + (int)(zufall.nextDouble()*n+1) + "\t" + ADDRESS68 + "\n");
+			}
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void init_tps_DBinline(Connection conn, int n) throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO accounts test.accounts;");
+		
 	}
 }
