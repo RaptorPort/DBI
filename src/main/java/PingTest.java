@@ -48,7 +48,7 @@ public class PingTest {
 		}	
 		
 	}
-	
+		
 	public static void sqlQuery(Connection conn) throws SQLException
 	{
 		Statement stmt = conn.createStatement();
@@ -299,7 +299,7 @@ public class PingTest {
 	
 	public static void init_tps_DBinline(Connection conn, int n) throws SQLException {
 		Statement stmt = conn.createStatement();
-		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO accounts test.accounts;");
-		
+		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO TABLE test.accounts FIELDS TERMINATED BY ' ';");
+		conn.commit();
 	}
 }
