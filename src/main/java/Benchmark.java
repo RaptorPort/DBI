@@ -1,29 +1,17 @@
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import com.opencsv.CSVWriter;
+import init_tps_DB.*;
 
 public class Benchmark {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.188.59/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private static final String CONN_STRING = "jdbc:mysql://192.168.188.59/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		//createINFILEcsvAccounts(2);
@@ -35,16 +23,20 @@ public class Benchmark {
 			conn.setAutoCommit(false);
 			System.out.println("Connected!");
 			
+			System.out.println("Initializing DB-Schema");
 			initDBschema(conn);
-			TimeUnit.SECONDS.sleep(10);
-			long startTime = System.currentTimeMillis()/100;
+			System.out.println("Wait for DB to finish...");
+			TimeUnit.SECONDS.sleep(3);
+			
+			System.out.println("Starting Benchmark!");
+			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			preparedStatement.init_tps_DB(conn, 1);
+			Infile.init_tps_DB(conn, 1);
 			
-			long endTime = System.currentTimeMillis()/100;
+			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;
-			System.out.println("Execution time in Seconds: " + timeElapsed);
+			System.out.println("Execution time in Seconds: " + timeElapsed/1000);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -57,21 +49,7 @@ public class Benchmark {
 		}	
 		
 	}
-		
-	public static void sqlQuery(Connection conn) throws SQLException
-	{
-		Statement stmt = conn.createStatement();
-		ResultSet rlt = stmt.executeQuery("select * from customers, products");
-		
-		while (rlt.next())
-		{
-			System.out.printf("%10s | ",rlt.getString("cid"));
-			System.out.printf("%10s | ",rlt.getString("pid"));
-			System.out.printf("%10s | ",rlt.getString("cname"));
-			System.out.printf("%10s | ",rlt.getString("city")+" | ");
-			System.out.printf("%10s |\n",rlt.getString("discnt"));				
-		}
-	}
+
 	public static void initDBschema(Connection conn) throws SQLException
 	{
 		Statement stmt = conn.createStatement();
@@ -125,268 +103,18 @@ public class Benchmark {
 		conn.commit();
 	}
 	
-	public static void init_tps_DB(Connection conn, int n) throws SQLException {	 
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
+	public static void sqlQuery(Connection conn) throws SQLException
+	{
+		Statement stmt = conn.createStatement();
+		ResultSet rlt = stmt.executeQuery("select * from customers, products");
 		
-		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
-				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
-		for (int i = 1; i <= n; i++) {
-			stmt.setInt(1, i);
-			stmt.executeUpdate();
+		while (rlt.next())
+		{
+			System.out.printf("%10s | ",rlt.getString("cid"));
+			System.out.printf("%10s | ",rlt.getString("pid"));
+			System.out.printf("%10s | ",rlt.getString("cname"));
+			System.out.printf("%10s | ",rlt.getString("city")+" | ");
+			System.out.printf("%10s |\n",rlt.getString("discnt"));				
 		}
-		conn.commit();
-		System.out.println("Branches DONE");
-	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
-		stmt = conn.prepareStatement( 
-				"insert into accounts values (?, ?, 0, ?, ?)"
-				);
-		for (int i = 1; i <= n*100000; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
-			stmt.executeUpdate();
-		}
-		conn.commit(); 
-		System.out.println("Accounts DONE");
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
-		stmt = conn.prepareStatement( 
-				"insert into tellers values (?, ?, 0, ?, ?)"
-				);
-		for (int i = 1; i <= n*10; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
-			stmt.executeUpdate();
-		}
-		conn.commit(); 
-		System.out.println("Tellers DONE");
-		//0 Tupel in der HISTORY-Relation.
-	}
-	
-	
-	public static void init_tps_DBString(Connection conn, int n) throws SQLException {	 
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
-		
-		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
-				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
-		for (int i = 1; i <= n; i++) {
-			stmt.setInt(1, i);
-			stmt.executeUpdate();
-		}
-		conn.commit();
-		System.out.println("Branches DONE");
-	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
-		
-		String query = "insert into test.accounts (accid, name, balance, branchid, address) values";
-		Statement stmt2 = conn.createStatement();
-		query += "(" + 1 + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
-		for (int i = 2; i <= n*100000; i++) {
-			query += ",(" + i + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
-			if (i % 10000 == 0)
-				System.out.println(i + " ");
-		}
-		query += ";";
-		System.out.println("Query String done!");
-		stmt2.executeUpdate(query);
-		conn.commit(); 
-		System.out.println("Accounts DONE");
-		
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
-		stmt = conn.prepareStatement( 
-				"insert into tellers values (?, ?, 0, ?, ?)"
-				);
-		for (int i = 1; i <= n*10; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
-			stmt.executeUpdate();
-		}
-		conn.commit(); 
-		System.out.println("Tellers DONE");
-		//0 Tupel in der HISTORY-Relation.
-	}
-	
-	public static void init_tps_DBbatch(Connection conn, int n) throws SQLException {	 
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
-		
-		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
-				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
-		for (int i = 1; i <= n; i++) {
-			stmt.setInt(1, i);
-			stmt.executeUpdate();
-		}
-		conn.commit();
-		System.out.println("Branches DONE");
-	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
-		
-		Statement stmt2 = conn.createStatement();
-		for (int i = 1; i <= n*100000; i++) {
-			stmt2.addBatch( "insert into accounts values (" + i + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")");
-		}
-		
-		stmt2.executeBatch();
-		conn.commit(); 
-		System.out.println("Accounts DONE");
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
-		stmt = conn.prepareStatement( 
-				"insert into tellers values (?, ?, 0, ?, ?)"
-				);
-		for (int i = 1; i <= n*10; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
-			stmt.executeUpdate();
-		}
-		conn.commit(); 
-		System.out.println("Tellers DONE");
-		//0 Tupel in der HISTORY-Relation.
-	}
-	
-	private static void createINFILEtxtAccounts(int n) {
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
-		
-		try (Writer txt = new BufferedWriter(new OutputStreamWriter(
-	              new FileOutputStream("INFILEaccounts.txt"), "ASCII"))) {
-			for (int i = 1; i <= n*10000; i++) {
-				txt.write(i + "\t" + NAME20 + "\t0\t" + (int)(zufall.nextDouble()*n+1) + "\t" + ADDRESS68 + "\n");
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private static void createINFILEcsvAccounts(int n) {
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
-		
-		
-		try (
-	            Writer writer = Files.newBufferedWriter(Paths.get("./INFILEaccounts.csv"));
-
-	            CSVWriter csvWriter = new CSVWriter(writer,
-	                    CSVWriter.DEFAULT_SEPARATOR,
-	                    CSVWriter.NO_QUOTE_CHARACTER,
-	                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-	                    CSVWriter.DEFAULT_LINE_END);
-	        ) {
-	            String[] headerRecord = {"accid", "name", "balance", "branchID", "address"};
-	            csvWriter.writeNext(headerRecord);
-	            for (int i = 1; i <= n*10000; i++) {
-	            	csvWriter.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
-	            }
-	        } catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-	}
-	
-	public static void init_tps_DBinline(Connection conn, int n) throws SQLException {
-		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		 
-		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
-		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
-		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
-		
-		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
-				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
-		for (int i = 1; i <= n; i++) {
-			stmt.setInt(1, i);
-			stmt.executeUpdate();
-		}
-		conn.commit();
-		System.out.println("Branches DONE");
-	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
-		
-		Statement stmt2 = conn.createStatement();
-		System.out.println("Start INLINE insert");
-		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts;");
-		conn.commit();
-		System.out.println("Commit check");
-		
-		System.out.println("Accounts DONE");
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
-		stmt = conn.prepareStatement( 
-				"insert into tellers values (?, ?, 0, ?, ?)"
-				);
-		for (int i = 1; i <= n*10; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
-			stmt.executeUpdate();
-		}
-		conn.commit(); 
-		System.out.println("Tellers DONE");
-		//0 Tupel in der HISTORY-Relation.
-		
 	}
 }
