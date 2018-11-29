@@ -1,10 +1,13 @@
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,6 +17,8 @@ import java.sql.Statement;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import com.opencsv.CSVWriter;
+
 public class PingTest {
 
 	private static final String USERNAME = "dbi";
@@ -21,7 +26,7 @@ public class PingTest {
 	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
-		createINFILEtxtAccounts(10);
+		createINFILEcsvAccounts(2);
 		System.out.println("INFILE check");
 
 		Connection conn = null; 
@@ -30,7 +35,7 @@ public class PingTest {
 			conn.setAutoCommit(false);
 			System.out.println("Connected!");
 			initDBschema(conn);
-			TimeUnit.SECONDS.sleep(20);
+			TimeUnit.SECONDS.sleep(10);
 			long startTime = System.currentTimeMillis()/100;
 			init_tps_DBinline(conn, 1);
 			long endTime = System.currentTimeMillis()/100;
@@ -297,9 +302,43 @@ public class PingTest {
 		}
 	}
 	
+	private static void createINFILEcsvAccounts(int n) {
+		Random zufall = new Random(); // neues Random Objekt, namens zufall
+		 
+		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
+		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
+		final String NAME20 = "NAME2001234567890123";
+		final String CMMNT30 = "CMMNT1234567891234567891234567";
+		
+		
+		try (
+	            Writer writer = Files.newBufferedWriter(Paths.get("./INFILEaccounts.csv"));
+
+	            CSVWriter csvWriter = new CSVWriter(writer,
+	                    CSVWriter.DEFAULT_SEPARATOR,
+	                    CSVWriter.NO_QUOTE_CHARACTER,
+	                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+	                    CSVWriter.DEFAULT_LINE_END);
+	        ) {
+	            String[] headerRecord = {"accid", "name", "balance", "branchID", "address"};
+	            csvWriter.writeNext(headerRecord);
+	            for (int i = 1; i <= n*10000; i++) {
+	            	csvWriter.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
+	            }
+	        } catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+	
 	public static void init_tps_DBinline(Connection conn, int n) throws SQLException {
 		Statement stmt = conn.createStatement();
-		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO TABLE test.accounts FIELDS TERMINATED BY ' ' LINES TERMINATED BY '\n';");
+		System.out.println("Start INLINE insert");
+		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts;");
 		conn.commit();
+		System.out.println("Commit check");
+		
+		
 	}
 }
