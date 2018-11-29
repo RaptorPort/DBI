@@ -18,7 +18,7 @@ public class PingTest {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.254.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		createINFILEtxtAccounts(10);
@@ -282,7 +282,7 @@ public class PingTest {
 		
 		try (Writer txt = new BufferedWriter(new OutputStreamWriter(
 	              new FileOutputStream("INFILEaccounts.txt"), "ASCII"))) {
-			for (int i = 1; i <= n*100000; i++) {
+			for (int i = 1; i <= n*10000; i++) {
 				txt.write(i + "\t" + NAME20 + "\t" + (int)(zufall.nextDouble()*n+1) + "\t" + ADDRESS68 + "\n");
 			}
 		} catch (UnsupportedEncodingException e) {
@@ -299,7 +299,7 @@ public class PingTest {
 	
 	public static void init_tps_DBinline(Connection conn, int n) throws SQLException {
 		Statement stmt = conn.createStatement();
-		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO TABLE test.accounts FIELDS TERMINATED BY ' ';");
+		stmt.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.txt' INTO TABLE test.accounts FIELDS TERMINATED BY ' ' LINES TERMINATED BY '\n';");
 		conn.commit();
 	}
 }
