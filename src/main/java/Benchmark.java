@@ -19,25 +19,29 @@ import java.util.concurrent.TimeUnit;
 
 import com.opencsv.CSVWriter;
 
-public class PingTest {
+public class Benchmark {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private static final String CONN_STRING = "jdbc:mysql://192.168.188.59/test?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
-		createINFILEcsvAccounts(2);
-		System.out.println("INFILE check");
+		//createINFILEcsvAccounts(2);
+		//System.out.println("INFILE check");
 
 		Connection conn = null; 
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			conn.setAutoCommit(false);
 			System.out.println("Connected!");
+			
 			initDBschema(conn);
 			TimeUnit.SECONDS.sleep(10);
 			long startTime = System.currentTimeMillis()/100;
-			init_tps_DBinline(conn, 1);
+			
+			// Initialize Database - INSERT
+			preparedStatement.init_tps_DB(conn, 1);
+			
 			long endTime = System.currentTimeMillis()/100;
 			long timeElapsed = endTime - startTime;
 			System.out.println("Execution time in Seconds: " + timeElapsed);
@@ -199,12 +203,16 @@ public class PingTest {
 		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
 		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
 		
-		String query = "insert into accounts values ";
+		String query = "insert into test.accounts (accid, name, balance, branchid, address) values";
 		Statement stmt2 = conn.createStatement();
-		query += "(" + 1 + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")";
+		query += "(" + 1 + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
 		for (int i = 2; i <= n*100000; i++) {
-			query += ", (" + i + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")";
+			query += ",(" + i + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
+			if (i % 10000 == 0)
+				System.out.println(i + " ");
 		}
+		query += ";";
+		System.out.println("Query String done!");
 		stmt2.executeUpdate(query);
 		conn.commit(); 
 		System.out.println("Accounts DONE");
