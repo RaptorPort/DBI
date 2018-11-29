@@ -283,7 +283,7 @@ public class PingTest {
 		try (Writer txt = new BufferedWriter(new OutputStreamWriter(
 	              new FileOutputStream("INFILEaccounts.txt"), "ASCII"))) {
 			for (int i = 1; i <= n*10000; i++) {
-				txt.write(i + "\t" + NAME20 + "\t" + (int)(zufall.nextDouble()*n+1) + "\t" + ADDRESS68 + "\n");
+				txt.write(i + "\t" + NAME20 + "\t0\t" + (int)(zufall.nextDouble()*n+1) + "\t" + ADDRESS68 + "\n");
 			}
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
