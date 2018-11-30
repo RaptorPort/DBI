@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-import com.opencsv.CSVWriter;
+//import com.opencsv.CSVWriter;
 
 public class Infile {
 	final static String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
