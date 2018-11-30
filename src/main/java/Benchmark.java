@@ -1,3 +1,4 @@
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,7 +12,8 @@ public class Benchmark {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.188.59/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	private static final String CONN_STRING = "jdbc:mysql://192.168.188.59/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+			+"&sessionVariables=unique_checks=0,foreign_key_checks=0&useCompression=true"; //Session Variablen setzen
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		Connection conn = null; 
@@ -34,7 +36,8 @@ public class Benchmark {
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;
-			System.out.println("Execution time in Seconds: " + timeElapsed/1000);
+			System.out.println("Execution time in Seconds: " + (double)(timeElapsed/1000.00));
+			deletecsv();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -114,5 +117,16 @@ public class Benchmark {
 			System.out.printf("%10s | ",rlt.getString("city")+" | ");
 			System.out.printf("%10s |\n",rlt.getString("discnt"));				
 		}
+	}
+	
+	public static void deletecsv() 
+	{
+		File csvdatei = new File("./INFILEaccounts.csv");
+		if (csvdatei.exists())
+		{
+			csvdatei.delete();
+			System.out.println("deleted old csv file.");
+		}
+		
 	}
 }
