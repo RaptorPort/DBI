@@ -26,13 +26,13 @@ public class Benchmark {
 			System.out.println("Initializing DB-Schema");
 			initDBschema(conn);
 			System.out.println("Wait for DB to finish...");
-			TimeUnit.SECONDS.sleep(3);
+			TimeUnit.SECONDS.sleep(15);
 			
 			System.out.println("Starting Benchmark!");
 			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			Batch.init_tps_DB(conn, 10);
+			VariableSizeStrings.init_tps_DB(conn, 10);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;

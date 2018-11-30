@@ -18,7 +18,7 @@ public class OneBigString {
 				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
 				);
 		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
+		//BALANCE 0 und Strings der richtigen Lèˆ…ge fï¿½r BRANCHNAME und ADDRESS
 		for (int i = 1; i <= n; i++) {
 			stmt.setInt(1, i);
 			stmt.executeUpdate();
@@ -27,13 +27,13 @@ public class OneBigString {
 		System.out.println("Branches DONE");
 	
 		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
+		//n * 100000), dem Kontostand (BALANCE) 0, einer zufèˆligen BRANCHID (1 bis n) und
+		//wieder beliebigen Strings der richtigen Lèˆ…ge fï¿½r NAME und ADDRESS
 		
 		String query = "insert into test.accounts (accid, name, balance, branchid, address) values";
 		Statement stmt2 = conn.createStatement();
 		query += "(" + 1 + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
-		for (int i = 2; i <= n*100000; i++) {
+		for (int i = 2; i <= n*1000; i++) {
 			query += ",(" + i + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
 			if (i % 10000 == 0)
 				System.out.println(i + " ");
@@ -45,8 +45,8 @@ public class OneBigString {
 		System.out.println("Accounts DONE");
 		
 		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
+		//BALANCE 0, einer zufèˆligen BRANCHID (1 bis n) und wieder beliebigen Strings der
+		//richtigen Lèˆ…ge fï¿½r TELLERNAME und ADDRESS
 		stmt = conn.prepareStatement( 
 				"insert into tellers values (?, ?, 0, ?, ?)"
 				);
