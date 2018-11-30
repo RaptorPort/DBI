@@ -15,6 +15,7 @@ public class Benchmark {
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		Connection conn = null; 
+
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			conn.setAutoCommit(false);
@@ -29,7 +30,7 @@ public class Benchmark {
 			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			Batch.init_tps_DB(conn, 1);
+			Infile.init_tps_DB(conn, 1);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;

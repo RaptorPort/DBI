@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -116,5 +117,16 @@ public class Infile {
 		System.out.println("Tellers DONE");
 		//0 Tupel in der HISTORY-Relation.
 		
+	}
+	
+	public static void x() {
+		try {
+			Path po = Paths.get("./bin/src/INFILEaccounts");
+			//Path folder = p.getParent();
+			Process p = Runtime.getRuntime().exec("cmd /c start " + po);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
