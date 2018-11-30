@@ -32,7 +32,7 @@ public class Benchmark {
 			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			Infile.init_tps_DB(conn, 10);
+			Batch.init_tps_DB(conn, 10);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;

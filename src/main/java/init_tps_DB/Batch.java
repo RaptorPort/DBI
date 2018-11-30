@@ -32,7 +32,7 @@ public class Batch {
 		
 		Statement stmt2 = conn.createStatement();
 		for (int i = 1; i <= n*100000; i++) {
-			stmt2.addBatch( "insert into accounts values (" + i + ", " + NAME20 + ", " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")");
+			stmt2.addBatch( "insert into accounts values (" + i + ", " + NAME20 + ", 0, " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")");
 		}
 		
 		stmt2.executeBatch();
