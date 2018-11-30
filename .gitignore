@@ -1,5 +1,5 @@
 bin/
 *.class
 /build/
-/.gradle/
+.gradle/
 libs/opencsv-4\.3\.2\.jar

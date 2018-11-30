@@ -60,7 +60,7 @@ public class Infile {
 	        ) {
 	            String[] headerRecord = {"accid", "name", "balance", "branchID", "address"};
 	            csvWriter.writeNext(headerRecord);
-	            for (int i = 1; i <= n*10000; i++) {
+	            for (int i = 1; i <= n*100000; i++) {
 	            	csvWriter.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
 	            }
 	        } catch (IOException e) {
@@ -95,7 +95,7 @@ public class Infile {
 		
 		Statement stmt2 = conn.createStatement();
 		System.out.println("Start INLINE insert");
-		stmt2.executeUpdate("LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
+		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
 		conn.commit();
 		System.out.println("Commit check");
 		
