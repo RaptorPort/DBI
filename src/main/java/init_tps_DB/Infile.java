@@ -45,14 +45,47 @@ public class Infile {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void createINFILEcsvAccounts(int n) {
+	private static void createINFILEcsvAccounts(int n)
+	{
 		Random zufall = new Random(); // neues Random Objekt, namens zufall		
 		
 		try (
 	            Writer writer = Files.newBufferedWriter(Paths.get("./INFILEaccounts.csv"));
-
+				
 	            CSVWriter csvWriter = new CSVWriter(writer,
+	                    CSVWriter.DEFAULT_SEPARATOR,
+	                    CSVWriter.NO_QUOTE_CHARACTER,
+	                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+	                    CSVWriter.DEFAULT_LINE_END);
+				
+	        ) {
+	            String[] headerRecord = {"accid", "name", "balance", "branchID", "address"};
+	            csvWriter.writeNext(headerRecord);
+	            for (int i = 1; i <= n*100000; i++) {
+	            	csvWriter.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
+	            }
+	        } catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+	
+	
+	private static void createSplitINFILEcsvAccounts(int n) {
+		Random zufall = new Random(); // neues Random Objekt, namens zufall		
+		
+		try (
+	            Writer writer = Files.newBufferedWriter(Paths.get("./INFILEaccounts.csv"));
+				Writer writerb = Files.newBufferedWriter(Paths.get("./INFILEaccounts2.csv"));
+				
+	            CSVWriter csvWriter = new CSVWriter(writer,
+	                    CSVWriter.DEFAULT_SEPARATOR,
+	                    CSVWriter.NO_QUOTE_CHARACTER,
+	                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+	                    CSVWriter.DEFAULT_LINE_END);
+				
+				CSVWriter csvWriter2 = new CSVWriter(writerb,
 	                    CSVWriter.DEFAULT_SEPARATOR,
 	                    CSVWriter.NO_QUOTE_CHARACTER,
 	                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
@@ -60,8 +93,14 @@ public class Infile {
 	        ) {
 	            String[] headerRecord = {"accid", "name", "balance", "branchID", "address"};
 	            csvWriter.writeNext(headerRecord);
-	            for (int i = 1; i <= n*100000; i++) {
+	            for (int i = 1; i < ((n*100000)/2); i++) {
 	            	csvWriter.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
+	            }
+	            csvWriter2.writeNext(headerRecord);
+	            for(int i=((n*100000)/2);i<=n*100000;i++)
+	            {
+	            	csvWriter2.writeNext(new String[]{i + "", NAME20, "0", (int)(zufall.nextDouble()*n+1) + "", ADDRESS68});
+		            
 	            }
 	        } catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -97,6 +136,58 @@ public class Infile {
 		System.out.println("Start INLINE insert");
 		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
 		conn.commit();
+		stmt2.close();
+		System.out.println("Commit check");
+		
+		System.out.println("Accounts DONE");
+		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
+		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
+		//richtigen Länge für TELLERNAME und ADDRESS
+		stmt = conn.prepareStatement( 
+				"insert into tellers values (?, ?, 0, ?, ?)"
+				);
+		for (int i = 1; i <= n*10; i++) {
+			stmt.setInt(1, i);
+			stmt.setString(2, NAME20);
+			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
+			stmt.setString(4, ADDRESS68);
+			stmt.executeUpdate();
+		}
+		conn.commit(); 
+		System.out.println("Tellers DONE");
+		//0 Tupel in der HISTORY-Relation.
+		
+	}
+	
+	public static void init_tps_DB_split(Connection conn, int n) throws SQLException {
+		Random zufall = new Random(); // neues Random Objekt, namens zufall
+		
+		System.out.print("Generating INFILEaccounts.csv...");
+		createINFILEcsvAccounts(n);
+		System.out.println("\tdone!");
+		
+		PreparedStatement stmt = conn.prepareStatement( 
+				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
+				);
+		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
+		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
+		for (int i = 1; i <= n; i++) {
+			stmt.setInt(1, i);
+			stmt.executeUpdate();
+		}
+		conn.commit();
+		System.out.println("Branches DONE");
+	
+		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
+		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
+		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
+		
+		Statement stmt2 = conn.createStatement();
+		System.out.println("Start INLINE insert");
+		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
+		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts2.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\n' IGNORE 1 LINES;");
+		conn.commit();
+		stmt2.close();
 		System.out.println("Commit check");
 		
 		System.out.println("Accounts DONE");
