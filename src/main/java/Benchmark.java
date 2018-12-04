@@ -35,12 +35,8 @@ public class Benchmark {
 			System.out.println("Starting Benchmark!");
 			long startTime = System.currentTimeMillis();
 			
-			Statement stmt1 = conn.createStatement();
-			stmt1.executeUpdate("SET sql_log_bin = 0;");
-			stmt1.executeUpdate("SET sql_log_off = 1;");
-			
 			// Initialize Database - INSERT
-			Batch.init_tps_DB(conn, 10);
+			Infile.init_tps_DB_split(conn, 20);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;

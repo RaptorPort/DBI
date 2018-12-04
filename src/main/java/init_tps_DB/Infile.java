@@ -134,7 +134,7 @@ public class Infile {
 		
 		Statement stmt2 = conn.createStatement();
 		System.out.println("Start INLINE insert");
-		stmt2.executeUpdate("LOAD DATA INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
+		stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts.csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
 		conn.commit();
 		stmt2.close();
 		System.out.println("Commit check");
@@ -163,7 +163,7 @@ public class Infile {
 		Random zufall = new Random(); // neues Random Objekt, namens zufall
 		
 		System.out.print("Generating INFILEaccounts.csv...");
-		createINFILEcsvAccounts(n);
+		createSplitINFILEcsvAccounts(n);
 		System.out.println("\tdone!");
 		
 		PreparedStatement stmt = conn.prepareStatement( 
