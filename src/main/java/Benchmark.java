@@ -40,7 +40,7 @@ public class Benchmark {
 			stmt1.executeUpdate("SET sql_log_off = 1;");
 			
 			// Initialize Database - INSERT
-			Batch.init_tps_DB(conn, 10);
+			Infile.init_tps_DB(conn, 50);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;
