@@ -28,7 +28,7 @@ public class VariableInfile {
 		Random zufall = new Random(); // neues Random Objekt, namens zufall		
 		
 		try (
-	            Writer writer = Files.newBufferedWriter(Paths.get("./INFILEaccounts" + filenumber + ".csv"));
+	            Writer writer = Files.newBufferedWriter(Paths.get("C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Data\\test\\INFILEaccounts" + filenumber + ".csv"));
 				
 	            CSVWriter csvWriter = new CSVWriter(writer,
 	                    CSVWriter.DEFAULT_SEPARATOR,
@@ -50,11 +50,15 @@ public class VariableInfile {
 	
 	public static void init_tps_DB(Connection conn, int n) throws SQLException {
 		Random zufall = new Random(); // neues Random Objekt, namens zufall
-		
-		System.out.print("Generating INFILEaccounts.csv...");
-		createINFILEcsvAccounts(n);
-		System.out.println("\tdone!");
-		
+		int initialsize = 10000;
+		int size = initialsize;
+		int filenumber = 1;
+		/*
+		for (int i = 1; i <= n*100000; i += size) {
+			createINFILEcsvAccounts(n, filenumber, i, size);
+			filenumber++;
+		}
+		*/
 		PreparedStatement stmt = conn.prepareStatement( 
 				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
 				);
@@ -73,11 +77,12 @@ public class VariableInfile {
 		
 		Statement stmt2 = conn.createStatement();
 		System.out.println("Start INLINE insert");
-		int size = 1000;
-		int filenumber = 1;
+		size = initialsize;
+		filenumber = 1;
 		for (int i = 1; i <= n*100000; i += size) {
-			createINFILEcsvAccounts(n, i, filenumber, size);
-			stmt2.executeUpdate("LOAD DATA LOCAL INFILE 'INFILEaccounts" + filenumber + ".csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
+			createINFILEcsvAccounts(n, filenumber, i, size);
+			stmt2.executeUpdate("LOAD DATA INFILE 'INFILEaccounts" + filenumber + ".csv' INTO TABLE test.accounts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;");
+			filenumber++;
 		}
 		conn.commit();
 		
