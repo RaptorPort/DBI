@@ -124,13 +124,17 @@ public class Benchmark {
 	}
 	
 	public static void deletecsv() 
-	{
-		File csvdatei = new File("./INFILEaccounts.csv");
-		if (csvdatei.exists())
-		{
-			csvdatei.delete();
-			System.out.println("deleted old csv file.");
+	{		
+		// Lists all files in folder
+		File folder = new File("./INFILEaccounts.csv");
+		File fList[] = folder.listFiles();
+		// Searchs .lck
+		for (int i = 0; i < fList.length; i++) {
+		    String pes = fList[i].toString();
+		    if (pes.endsWith(".csv")) {
+		        // and deletes
+		        boolean success = (fList[i].delete());
+		    }
 		}
-		
 	}
 }
