@@ -34,7 +34,7 @@ public class VariableBatch {
 		Statement stmt2 = conn.createStatement();
 		for (int i = 1; i <= n*100000; i++) {
 			stmt2.addBatch( "insert into accounts values (" + i + ", '" + NAME20 + "', 0, " + (int)(zufall.nextDouble()*n+1) + ", '" + ADDRESS68 + "')");
-			if (i%100 == 0)
+			if (i%1000 == 0)
 				stmt2.executeBatch();
 		}
 		conn.commit(); 
