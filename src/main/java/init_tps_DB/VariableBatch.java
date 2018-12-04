@@ -1,11 +1,12 @@
 package init_tps_DB;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-public class Batch {
+public class VariableBatch {
 	public static void init_tps_DB(Connection conn, int n) throws SQLException {	 
 		Random zufall = new Random(); // neues Random Objekt, namens zufall
 		 
@@ -18,7 +19,7 @@ public class Batch {
 				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
 				);
 		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen L�ｿｽnge f�ｿｽr BRANCHNAME und ADDRESS
+		//BALANCE 0 und Strings der richtigen L�nge f�r BRANCHNAME und ADDRESS
 		for (int i = 1; i <= n; i++) {
 			stmt.setInt(1, i);
 			stmt.executeUpdate();
@@ -27,19 +28,32 @@ public class Batch {
 		System.out.println("Branches DONE");
 	
 		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zuf�ｿｽlligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen L�ｿｽnge f�ｿｽr NAME und ADDRESS
+		//n * 100000), dem Kontostand (BALANCE) 0, einer zuf�lligen BRANCHID (1 bis n) und
+		//wieder beliebigen Strings der richtigen L�nge f�r NAME und ADDRESS
 		
 		Statement stmt2 = conn.createStatement();
 		for (int i = 1; i <= n*100000; i++) {
-			stmt2.addBatch( "insert into accounts values (" + i + ", '" + NAME20 + "', 0, " + (int)(zufall.nextDouble()*n+1) + ", '" + ADDRESS68 + "');");
+			stmt2.addBatch( "insert into accounts values (" + i + ", '" + NAME20 + "', 0, " + (int)(zufall.nextDouble()*n+1) + ", '" + ADDRESS68 + "')");
+			if (i%100 == 0)
+				stmt2.executeBatch();
 		}
-		stmt2.executeBatch();
 		conn.commit(); 
 		System.out.println("Accounts DONE");
+		
+		/*
+		for (int s = 1; s < n; s += 1000) {
+			for (int i = s+1; i <= s + 1000 && i <= n*100000; i++) {
+				stmt2.addBatch( "insert into accounts values (" + i + ", " + NAME20 + ", 0, " + (int)(zufall.nextDouble()*n+1) + ", " + ADDRESS68 + ")");
+			}
+			stmt2.executeBatch();
+		}		
+		conn.commit();
+		System.out.println("Accounts DONE");
+		*/
+		
 		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zuf�ｿｽlligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen L�ｿｽnge f�ｿｽr TELLERNAME und ADDRESS
+		//BALANCE 0, einer zuf�lligen BRANCHID (1 bis n) und wieder beliebigen Strings der
+		//richtigen L�nge f�r TELLERNAME und ADDRESS
 		stmt = conn.prepareStatement( 
 				"insert into tellers values (?, ?, 0, ?, ?)"
 				);
