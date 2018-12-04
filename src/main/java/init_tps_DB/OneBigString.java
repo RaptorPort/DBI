@@ -33,7 +33,7 @@ public class OneBigString {
 		String query = "insert into test.accounts (accid, name, balance, branchid, address) values";
 		Statement stmt2 = conn.createStatement();
 		query += "(" + 1 + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
-		for (int i = 2; i <= n*1000; i++) {
+		for (int i = 2; i <= n*100000; i++) {
 			query += ",(" + i + ",'" + NAME20 + "',0," + (int)(zufall.nextDouble()*n+1) + ",'" + ADDRESS68 + "')";
 			if (i % 10000 == 0)
 				System.out.println(i + " ");

@@ -12,8 +12,8 @@ public class Benchmark {
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
-			+"&sessionVariables=unique_checks=0,foreign_key_checks=0&useCompression=true"; //Session Variablen setzen
+	private static final String CONN_STRING = "jdbc:mysql://localhost/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+			+"&sessionVariables=unique_checks=0,foreign_key_checks=0"; //Session Variablen setzen
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		Connection conn = null; 
@@ -28,11 +28,15 @@ public class Benchmark {
 			System.out.println("Wait for DB to finish...");
 			TimeUnit.SECONDS.sleep(15);
 			
+			Statement stmt1 = conn.createStatement();
+			stmt1.executeUpdate("SET sql_log_bin = 0;");
+			stmt1.executeUpdate("SET sql_log_off = 1;");
+			
 			System.out.println("Starting Benchmark!");
 			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			VariableSizeStrings.init_tps_DB(conn, 10);
+			Batch.init_tps_DB(conn, 10);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;

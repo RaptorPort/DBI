@@ -31,10 +31,9 @@ public class Batch {
 		//wieder beliebigen Strings der richtigen L�ｿｽnge f�ｿｽr NAME und ADDRESS
 		
 		Statement stmt2 = conn.createStatement();
-		for (int i = 1; i <= n*10000; i++) {
+		for (int i = 1; i <= n*100000; i++) {
 			stmt2.addBatch( "insert into accounts values (" + i + ", '" + NAME20 + "', 0, " + (int)(zufall.nextDouble()*n+1) + ", '" + ADDRESS68 + "');");
 		}
-		
 		stmt2.executeBatch();
 		conn.commit(); 
 		System.out.println("Accounts DONE");
