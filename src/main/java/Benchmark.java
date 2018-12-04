@@ -36,7 +36,7 @@ public class Benchmark {
 			long startTime = System.currentTimeMillis();
 			
 			// Initialize Database - INSERT
-			Infile.init_tps_DB_split(conn, 20);
+			VariableInfile.init_tps_DB(conn, 50);
 			
 			long endTime = System.currentTimeMillis();
 			long timeElapsed = endTime - startTime;
@@ -126,9 +126,10 @@ public class Benchmark {
 	public static void deletecsv() 
 	{		
 		// Lists all files in folder
-		File folder = new File("./INFILEaccounts.csv");
+		File folder = new File("./");
 		File fList[] = folder.listFiles();
 		// Searchs .lck
+		
 		for (int i = 0; i < fList.length; i++) {
 		    String pes = fList[i].toString();
 		    if (pes.endsWith(".csv")) {
