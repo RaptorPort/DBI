@@ -53,17 +53,10 @@ public class VariableInfile {
 		int initialsize = 10000;
 		int size = initialsize;
 		int filenumber = 1;
-		/*
-		for (int i = 1; i <= n*100000; i += size) {
-			createINFILEcsvAccounts(n, filenumber, i, size);
-			filenumber++;
-		}
-		*/
 		PreparedStatement stmt = conn.prepareStatement( 
 				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
 				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen L�nge f�r BRANCHNAME und ADDRESS
+		//Branches Relation
 		for (int i = 1; i <= n; i++) {
 			stmt.setInt(1, i);
 			stmt.executeUpdate();
@@ -71,9 +64,7 @@ public class VariableInfile {
 		conn.commit();
 		System.out.println("Branches DONE");
 	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zuf�lligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen L�nge f�r NAME und ADDRESS
+		//Account Relation
 		
 		Statement stmt2 = conn.createStatement();
 		System.out.println("Start INLINE insert");
@@ -90,9 +81,7 @@ public class VariableInfile {
 		System.out.println("Commit check");
 		
 		System.out.println("Accounts DONE");
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zuf�lligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen L�nge f�r TELLERNAME und ADDRESS
+		//Teller Relation
 		stmt = conn.prepareStatement( 
 				"insert into tellers values (?, ?, 0, ?, ?)"
 				);
@@ -107,16 +96,5 @@ public class VariableInfile {
 		System.out.println("Tellers DONE");
 		//0 Tupel in der HISTORY-Relation.
 		
-	}
-	
-	public static void x() {
-		try {
-			Path po = Paths.get("./bin/src/INFILEaccounts");
-			//Path folder = p.getParent();
-			Process p = Runtime.getRuntime().exec("cmd /c start " + po);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

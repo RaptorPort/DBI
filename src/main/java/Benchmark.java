@@ -17,7 +17,6 @@ public class Benchmark {
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
 		Connection conn = null; 
-
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			conn.setAutoCommit(false);
@@ -26,22 +25,21 @@ public class Benchmark {
 			System.out.println("Initializing DB-Schema");
 			initDBschema(conn);
 			System.out.println("Wait for DB to finish...");
-			TimeUnit.SECONDS.sleep(10);
+			TimeUnit.SECONDS.sleep(10);		//wait incase DB has to perform clean up tasks
 			
-			Statement stmt1 = conn.createStatement();
+			Statement stmt1 = conn.createStatement();	//set options for better performance
 			stmt1.executeUpdate("SET sql_log_bin = 0;");
 			stmt1.executeUpdate("SET sql_log_off = 1;");
 			
 			System.out.println("Starting Benchmark!");
-			long startTime = System.currentTimeMillis();
+			long startTime = System.currentTimeMillis(); //start measuring time
 			
-			// Initialize Database - INSERT
-			VariableInfile.init_tps_DB(conn, 50);
+			Infile.init_tps_DB(conn, 50);	//perform selected procedure to insert data
 			
-			long endTime = System.currentTimeMillis();
+			long endTime = System.currentTimeMillis();	//stop measuring time
 			long timeElapsed = endTime - startTime;
 			System.out.println("Execution time in Seconds: " + (double)(timeElapsed/1000.00));
-			deletecsv();
+			deletecsv();	//delete all the created .csv files, if present
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -51,8 +49,7 @@ public class Benchmark {
 				conn.close();
 				System.out.println("Connection Closed!");
 			}
-		}	
-		
+		}		
 	}
 
 	public static void initDBschema(Connection conn) throws SQLException
@@ -106,21 +103,6 @@ public class Benchmark {
 		+ "foreign key (branchid) references branches (branchid));"
 		 ); 
 		conn.commit();
-	}
-	
-	public static void sqlQuery(Connection conn) throws SQLException
-	{
-		Statement stmt = conn.createStatement();
-		ResultSet rlt = stmt.executeQuery("select * from customers, products");
-		
-		while (rlt.next())
-		{
-			System.out.printf("%10s | ",rlt.getString("cid"));
-			System.out.printf("%10s | ",rlt.getString("pid"));
-			System.out.printf("%10s | ",rlt.getString("cname"));
-			System.out.printf("%10s | ",rlt.getString("city")+" | ");
-			System.out.printf("%10s |\n",rlt.getString("discnt"));				
-		}
 	}
 	
 	public static void deletecsv() 

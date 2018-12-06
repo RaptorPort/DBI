@@ -11,13 +11,11 @@ public class preparedStatement {
 		final String ADDRESS68 = "ADRESSE6812345678912345678912345678912345678912345678912345678912345";
 		final String ADDRESS72 = "ADRESSE72123456789123456789123456789123456789123456789123456789123456789";
 		final String NAME20 = "NAME2001234567890123";
-		final String CMMNT30 = "CMMNT1234567891234567891234567";
 		
 		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
+				"insert into branches values (?, " + NAME20 + ", 0, " + ADDRESS72 + ")"
 				);
-		//n Tupel in der BRANCH-Relation mit fortlaufender BRANCHID (1 bis n), der
-		//BALANCE 0 und Strings der richtigen Länge für BRANCHNAME und ADDRESS
+		//Branches Relation
 		for (int i = 1; i <= n; i++) {
 			stmt.setInt(1, i);
 			stmt.executeUpdate();
@@ -25,24 +23,20 @@ public class preparedStatement {
 		conn.commit();
 		System.out.println("Branches DONE");
 	
-		//n * 100000 Tupel in der ACCOUNTS-Relation mit fortlaufender ACCID (1 bis
-		//n * 100000), dem Kontostand (BALANCE) 0, einer zufälligen BRANCHID (1 bis n) und
-		//wieder beliebigen Strings der richtigen Länge für NAME und ADDRESS
+		//Account Relation
 		stmt = conn.prepareStatement( 
 				"insert into accounts values (?, ?, 0, ?, ?)"
 				);
 		for (int i = 1; i <= n*100000; i++) {
-			stmt.setInt(1, i);
-			stmt.setString(2, NAME20);
-			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));
-			stmt.setString(4, ADDRESS68);
+			stmt.setInt(1, i);								//accid
+			stmt.setString(2, NAME20);						//name
+			stmt.setInt(3, (int)(zufall.nextDouble()*n+1));	//branchid
+			stmt.setString(4, ADDRESS68);					//address
 			stmt.executeUpdate();
 		}
 		conn.commit(); 
 		System.out.println("Accounts DONE");
-		//n * 10 Tupel in der TELLER-Relation mit fortlaufender TELLERID (1 bis n * 10), der
-		//BALANCE 0, einer zufälligen BRANCHID (1 bis n) und wieder beliebigen Strings der
-		//richtigen Länge für TELLERNAME und ADDRESS
+		//Teller Relation
 		stmt = conn.prepareStatement( 
 				"insert into tellers values (?, ?, 0, ?, ?)"
 				);
