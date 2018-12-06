@@ -54,7 +54,7 @@ public class VariableInfile {
 		int size = initialsize;
 		int filenumber = 1;
 		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
+				"insert into branches values (?, " + NAME20 + ", 0, " + ADDRESS72 + ")"
 				);
 		//Branches Relation
 		for (int i = 1; i <= n; i++) {

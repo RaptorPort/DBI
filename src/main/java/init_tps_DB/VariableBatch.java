@@ -16,7 +16,7 @@ public class VariableBatch {
 		final String CMMNT30 = "CMMNT1234567891234567891234567";
 		
 		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, 'BRANCHNAME', 0, 'ADDRESS')"
+				"insert into branches values (?, " + NAME20 + ", 0, " + ADDRESS72 + ")"
 				);
 		//Branches Relation
 		for (int i = 1; i <= n; i++) {
