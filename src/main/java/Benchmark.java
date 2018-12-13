@@ -16,11 +16,13 @@ public class Benchmark {
 			+"&sessionVariables=unique_checks=0,foreign_key_checks=0&useCompression=true"; //Session Variablen setzen
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
+		//DBConnection conn = new DBConnection();
 		Connection conn = null; 
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			conn.setAutoCommit(false);
 			System.out.println("Connected!");
+			
 						
 			clear_history_tbl(conn);
 			
