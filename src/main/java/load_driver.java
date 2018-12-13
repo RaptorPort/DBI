@@ -7,7 +7,7 @@ import java.util.Random;
 
 import tx.*;
 
-public class load_driver {
+public class load_driver extends Thread {
 	public enum State {
 		EINSCHWINGPHASE, MESSPHASE, AUSSCHWINGPHASE
 	}
@@ -15,15 +15,25 @@ public class load_driver {
 	static final State MESSPHASE = State.MESSPHASE;
 	static final State AUSSCHWINGPHASE = State.AUSSCHWINGPHASE;
 	
-	public static void start(Connection conn) throws SQLException, InterruptedException {
+	Connection conn;
+	int rndmInit;
+	int opCounter = 0;
+	long messzeit = 0;
+	State state = EINSCHWINGPHASE;
+	
+	public load_driver(Connection conn, int rndmInit) {
+		this.conn = conn;
+		this.rndmInit = rndmInit;
+	}
+	
+	public void run() {
 		Random rand = new Random();	
 		long startTime = 0;
 		long endEinschwingphase = 0;
 		long endMessphase = 0;
 		long endAusschwingphase = 0;
-		int opCounter = 0;
-		State state = EINSCHWINGPHASE;
 		
+		try {
 		System.out.println("Starting Benchmark!");
 			startTime = System.currentTimeMillis(); //start measuring time
 			
@@ -59,12 +69,14 @@ public class load_driver {
 				Thread.sleep(50);
 			}
 			endAusschwingphase = System.currentTimeMillis();
-			
 			//Auswertung
-			long messzeit = endEinschwingphase-endMessphase;
-			System.out.println("In der Messzeit von " + messzeit + "ms wurden " + opCounter + " Operationen durchgeführt.");
-			
-			System.out.println(opCounter / (messzeit / 1000) + "Operationen pro Sekunde");
-				
+			messzeit = endMessphase-endEinschwingphase;
+			System.out.println("Thread: " + Thread.currentThread().getId() + "Messzeit: " + messzeit 
+					+ "ms\tOps: " + opCounter + "\tOps/sec: " + opCounter / (messzeit / 1000));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return;			
 	}
 }

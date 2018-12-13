@@ -3,9 +3,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
-import java.sql.ResultSet;
-
+import java.util.ArrayList;
 import init_tps_DB.*;
 
 public class Benchmark {
@@ -26,7 +24,20 @@ public class Benchmark {
 						
 			clear_history_tbl(conn);
 			
-			load_driver.start(conn);
+			int sumOps = 0;
+			ArrayList<load_driver> threads = new ArrayList<load_driver>();
+			for (int i = 0; i < 5; i++) {
+				load_driver temp = new load_driver(conn, 7);
+				temp.start();
+				threads.add(temp);
+			}
+			for (load_driver ld : threads) {
+				ld.join();
+				while (ld.state != load_driver.AUSSCHWINGPHASE)
+					Thread.sleep(100);
+				sumOps += ld.opCounter;
+			}
+			System.out.println("End Result #Operations: " + sumOps);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
