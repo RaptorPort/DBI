@@ -3,10 +3,8 @@ bin/
 *.class
 
 ### Gradle ###
-.gradle
-/build/
 
-
+.gradle/
 libs/opencsv-4\.3\.2\.jar
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
