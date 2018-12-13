@@ -1,23 +1,70 @@
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
 
-import init_tps_DB.Infile;
+import java.sql.SQLException;
+
+import java.util.Random;
+
+
+import tx.*;
 
 public class load_driver {
+	public enum State {
+		EINSCHWINGPHASE, MESSPHASE, AUSSCHWINGPHASE
+	}
+	static final State EINSCHWINGPHASE = State.EINSCHWINGPHASE;
+	static final State MESSPHASE = State.MESSPHASE;
+	static final State AUSSCHWINGPHASE = State.AUSSCHWINGPHASE;
 	
 	public static void start(Connection conn) throws SQLException, InterruptedException {
-			System.out.println("Starting Benchmark!");
-			long startTime = System.currentTimeMillis(); //start measuring time
+		Random rand = new Random();	
+		long startTime = 0;
+		long endEinschwingphase = 0;
+		long endMessphase = 0;
+		long endAusschwingphase = 0;
+		int opCounter = 0;
+		State state = EINSCHWINGPHASE;
+		
+		System.out.println("Starting Benchmark!");
+			startTime = System.currentTimeMillis(); //start measuring time
 			
-			while (System.TimeMillis)
+			//Load-Driver Schleife 10min = 600000ms
+			while (System.currentTimeMillis()-startTime <= 600000) {
+				//Einschwingphase
+				if (state == EINSCHWINGPHASE && System.currentTimeMillis()-startTime >= 240000) {
+					endEinschwingphase = System.currentTimeMillis();
+					state = MESSPHASE;
+				}
+					
+				int rndm = rand.nextInt(100) + 1;
+				if (rndm <= 35) {
+					//Kontostand
+					tx.Kontostand.start(conn, rand.nextInt(10000000));
+				} else if (rndm <= 85) {
+					//Einzahlung
+					tx.Einzahlung.start(conn, rand.nextInt(10000000)+1, rand.nextInt(1000)+1, rand.nextInt(100)+1, rand.nextInt(10000)+1);
+				} else {
+					//Analyse
+					tx.Analyse.start(conn, rand.nextInt(10000)+1);
+				}
+				
+				//Messphase
+				if(state == MESSPHASE) {
+					opCounter++;
+					if (System.currentTimeMillis()-endEinschwingphase >= 300000) {
+						state = AUSSCHWINGPHASE;
+						endMessphase = System.currentTimeMillis();
+					}
+				}
+				//wait 50ms
+				Thread.sleep(50);
+			}
+			endAusschwingphase = System.currentTimeMillis();
 			
+			//Auswertung
+			long messzeit = endEinschwingphase-endMessphase;
+			System.out.println("In der Messzeit von " + messzeit + "ms wurden " + opCounter + " Operationen durchgeführt.");
 			
-			long endTime = System.currentTimeMillis();	//stop measuring time
-			long timeElapsed = endTime - startTime;
-			System.out.println("Execution time in Seconds: " + (double)(timeElapsed/1000.00));
+			System.out.println(opCounter / (messzeit / 1000) + "Operationen pro Sekunde");
 				
 	}
 }

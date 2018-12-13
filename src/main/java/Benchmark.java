@@ -24,6 +24,8 @@ public class Benchmark {
 						
 			clear_history_tbl(conn);
 			
+			load_driver.start(conn);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
