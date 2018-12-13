@@ -8,7 +8,7 @@ public class Einzahlung {
 		try
 		{
 			
-			PreparedStatement stmt = conn.prepareStatement("UPDATE brancches SET balance = balance + "+delta+"WHERE branchid ="+branchid+";");
+			PreparedStatement stmt = conn.prepareStatement("UPDATE branches SET balance = balance + "+delta+"WHERE branchid ="+branchid+";");
 			stmt.executeQuery();
 			
 			stmt = conn.prepareStatement("UPDATE tellers SET balance = balance + "+delta+"WHERE tellerid ="+tellerid+";");
@@ -20,7 +20,7 @@ public class Einzahlung {
 			ResultSet result = stmt.executeQuery();
 			result.next();
 			
-			stmt = conn.prepareStatement("INSERT INTo history VALUES ("+accid+", "+tellerid+", "+branchid+" , " +result.getInt(1)+","
+			stmt = conn.prepareStatement("INSERT INTO history VALUES ("+accid+", "+tellerid+", "+branchid+" , " +result.getInt(1)+","
 					+ "'abcdefghijklmnopqrstuvwxvzabcd');");
 			
 			stmt.executeQuery();
