@@ -54,7 +54,7 @@ public class Infile {
 		System.out.println("\tdone!");
 		
 		PreparedStatement stmt = conn.prepareStatement( 
-				"insert into branches values (?, " + NAME20 + ", 0, " + ADDRESS72 + ")"
+				"insert into branches values (?, '" + NAME20 + "', 0, '" + ADDRESS72 + "')"
 				);
 		//Branches Relation
 		for (int i = 1; i <= n; i++) {
