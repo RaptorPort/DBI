@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
 
+import init_tps_DB.*;
+
 public class createDB {
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
