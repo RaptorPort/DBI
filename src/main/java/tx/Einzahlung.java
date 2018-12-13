@@ -12,18 +12,18 @@ public class Einzahlung {
 			stmt.executeQuery();
 			
 			stmt = conn.prepareStatement("UPDATE tellers SET balance = balance + "+delta+"WHERE tellerid ="+tellerid+";");
-			stmt.executeQuery();
+			stmt.executeUpdate();
 			
 			stmt = conn.prepareStatement("UPDATE accounts SET balance = balance + "+delta+"WHERE accid ="+accid+";");
-			stmt.executeQuery();
-			stmt = conn.prepareStatement("SELECT blance FROM accounts WHERE accid ="+accid+";");
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE accid ="+accid+";");
 			ResultSet result = stmt.executeQuery();
 			result.next();
 			
 			stmt = conn.prepareStatement("INSERT INTO history VALUES ("+accid+", "+tellerid+", "+branchid+" , " +result.getInt(1)+","
 					+ "'abcdefghijklmnopqrstuvwxvzabcd');");
 			
-			stmt.executeQuery();
+			stmt.executeUpdate();
 			return result.getInt(1);
 		}
 		

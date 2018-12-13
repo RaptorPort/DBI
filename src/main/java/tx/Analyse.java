@@ -8,7 +8,7 @@ public class Analyse {
 	
 	public static int start (Connection conn, int delta){
 	try {
-		PreparedStatement stmt = conn.prepareStatement("SELECT = FROM history WHERE delta =" +delta+ ";");
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM history WHERE delta =" +delta+ ";");
 		ResultSet result = stmt.executeQuery();
 		int Anzahl = 0;
 		while(result.next())
