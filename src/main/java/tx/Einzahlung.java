@@ -20,7 +20,7 @@ public class Einzahlung {
 			ResultSet result = stmt.executeQuery();
 			result.next();
 			
-			stmt = conn.prepareStatement("INSERT INTO history VALUES ("+accid+", "+tellerid+", "+branchid+" , " +result.getInt(1)+","
+			stmt = conn.prepareStatement("INSERT INTO history VALUES ("+accid+", "+tellerid+", "+delta+" , "+branchid+" , " +result.getInt(1)+","
 					+ "'abcdefghijklmnopqrstuvwxvzabcd');");
 			
 			stmt.executeUpdate();
