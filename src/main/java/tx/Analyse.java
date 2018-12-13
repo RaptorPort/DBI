@@ -15,6 +15,7 @@ public class Analyse {
 		int Anzahl = 0;
 		while(result.next())
 			Anzahl++;
+		
 		return Anzahl;
 		}
 	catch (Exception e){
