@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Random;
+
 import init_tps_DB.*;
 
 public class Benchmark {
@@ -25,9 +27,10 @@ public class Benchmark {
 			clear_history_tbl(conn);
 			
 			int sumOps = 0;
+			Random rand = new Random();	
 			ArrayList<load_driver> threads = new ArrayList<load_driver>();
 			for (int i = 0; i < 5; i++) {
-				load_driver temp = new load_driver(conn, 7);
+				load_driver temp = new load_driver(conn, rand.nextInt());
 				temp.start();
 				threads.add(temp);
 			}

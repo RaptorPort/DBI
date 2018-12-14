@@ -27,7 +27,7 @@ public class load_driver extends Thread {
 	}
 	
 	public void run() {
-		Random rand = new Random();	
+		Random rand = new Random(rndmInit);	
 		long startTime = 0;
 		long endEinschwingphase = 0;
 		long endMessphase = 0;
