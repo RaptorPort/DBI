@@ -8,15 +8,15 @@ public class Einzahlung {
 		try
 		{
 			
-			PreparedStatement stmt = conn.prepareStatement("UPDATE branches SET balance = balance + "+delta+"WHERE branchid ="+branchid+";");
-			stmt.executeQuery();
-			
-			stmt = conn.prepareStatement("UPDATE tellers SET balance = balance + "+delta+"WHERE tellerid ="+tellerid+";");
+			PreparedStatement stmt = conn.prepareStatement("UPDATE branches SET balance = balance + "+delta+" WHERE branchid = "+branchid+";");
 			stmt.executeUpdate();
 			
-			stmt = conn.prepareStatement("UPDATE accounts SET balance = balance + "+delta+"WHERE accid ="+accid+";");
+			stmt = conn.prepareStatement("UPDATE tellers SET balance = balance + "+delta+" WHERE tellerid = "+tellerid+";");
 			stmt.executeUpdate();
-			stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE accid ="+accid+";");
+			
+			stmt = conn.prepareStatement("UPDATE accounts SET balance = balance + "+delta+" WHERE accid = "+accid+";");
+			stmt.executeUpdate();
+			stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE accid = "+accid+";");
 			ResultSet result = stmt.executeQuery();
 			result.next();
 			
