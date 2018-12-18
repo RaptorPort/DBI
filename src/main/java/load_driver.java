@@ -54,6 +54,7 @@ public class load_driver extends Thread {
 				} else if (rndm <= 85) {
 					//Einzahlung
 					tx.Einzahlung.start(conn, stmt, rand.nextInt(10000000)+1, rand.nextInt(1000)+1, rand.nextInt(100)+1, rand.nextInt(10000)+1);
+					
 				} else {
 					//Analyse
 					tx.Analyse.start(conn, stmt, rand.nextInt(10000)+1);

@@ -18,8 +18,8 @@ public class Einzahlung {
 			
 			//"UPDATE accounts SET balance = balance + ? WHERE accid = ? ;"
 			stmt.einzahlung_accounts.setInt(1, delta);
-			stmt.einzahlung_tellers.setInt(2, accid);
-			stmt.einzahlung_tellers.executeUpdate();
+			stmt.einzahlung_accounts.setInt(2, accid);
+			stmt.einzahlung_accounts.executeUpdate();
 			
 			//"SELECT balance FROM accounts WHERE accid = ?;"	
 			stmt.einzahlung_balance.setInt(1, accid);
@@ -36,6 +36,7 @@ public class Einzahlung {
 			stmt.einzahlung_history.setString(6, "abcdefghijklmnopqrstuvwxvzabcd");
 			stmt.einzahlung_history.executeUpdate();
 			
+			conn.commit();
 			return endresult;
 		}
 		catch (Exception e) {
