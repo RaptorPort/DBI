@@ -27,6 +27,7 @@ public class Benchmark {
 			clear_history_tbl(conn);
 			
 			int sumOps = 0;
+			long sumTime = 0;
 			Random rand = new Random();	
 			
 			ArrayList<load_driver> threads = new ArrayList<load_driver>();
@@ -42,6 +43,7 @@ public class Benchmark {
 				while (ld.state != load_driver.AUSSCHWINGPHASE)
 					Thread.sleep(100);
 				sumOps += ld.opCounter;
+				
 			}
 			System.out.println("End Result #Operations: " + sumOps);
 			
