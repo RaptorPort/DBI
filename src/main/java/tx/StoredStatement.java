@@ -4,16 +4,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class stmt {
-	static PreparedStatement einzahlung_tellers;
-	static PreparedStatement einzahlung_accounts;
-	static PreparedStatement einzahlung_balance;
-	static PreparedStatement einzahlung_history;
+public class StoredStatement {
+	PreparedStatement einzahlung_tellers;
+	PreparedStatement einzahlung_accounts;
+	PreparedStatement einzahlung_balance;
+	PreparedStatement einzahlung_history;
+	PreparedStatement einzahlung_branches;
 	
-	static PreparedStatement analyse;
-	static PreparedStatement kontostand;
+	PreparedStatement analyse;
+	PreparedStatement kontostand;
 	
-	public stmt() {
+	public StoredStatement() {
 		System.out.println("Creation of PreparedStatements");
 	}
 	
@@ -29,7 +30,8 @@ public class stmt {
 		einzahlung_tellers = conn.prepareStatement("UPDATE tellers SET balance = balance + ? WHERE tellerid = ?;");
 		einzahlung_accounts = conn.prepareStatement("UPDATE accounts SET balance = balance + ? WHERE accid = ? ;");
 		einzahlung_balance = conn.prepareStatement("SELECT balance FROM accounts WHERE accid = ?;");		
-		einzahlung_history       = conn.prepareStatement("INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);");
+		einzahlung_history = conn.prepareStatement("INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);");
+		einzahlung_branches = conn.prepareStatement("UPDATE branches SET balance = balance + ? WHERE branchid = ?;");
 		} catch (SQLException e) {
 			System.out.println("Initialisation of PreparedStatements faulty! (initEinzahlung)");
 			e.printStackTrace();
