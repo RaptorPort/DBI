@@ -1,7 +1,6 @@
 package tx;
 import java.sql.ResultSet;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class Einzahlung {
 	public static int start (Connection conn, StoredStatement stmt, int accid, int tellerid, int branchid, int delta) {
