@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import init_tps_DB.*;
+import tx.StoredStatement;
 
 public class Benchmark {
 
@@ -28,9 +29,12 @@ public class Benchmark {
 			
 			int sumOps = 0;
 			Random rand = new Random();	
+			
 			ArrayList<load_driver> threads = new ArrayList<load_driver>();
 			for (int i = 0; i < 5; i++) {
-				load_driver temp = new load_driver(conn, rand.nextInt());
+				StoredStatement stmt=new StoredStatement();
+				stmt.initAll(conn);
+				load_driver temp = new load_driver(conn, stmt, rand.nextInt());
 				temp.start();
 				threads.add(temp);
 			}

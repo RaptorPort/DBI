@@ -9,7 +9,7 @@ public class Einzahlung {
 			//"UPDATE branches SET balance = balance + ? WHERE branchid = ?;"
 			stmt.einzahlung_branches.setInt(1, delta);
 			stmt.einzahlung_branches.setInt(2, branchid);
-			stmt.einzahlung_branches.executeQuery();
+			stmt.einzahlung_branches.executeUpdate();
 			
 			//"UPDATE tellers SET balance = balance + ? WHERE tellerid = ?;"
 			stmt.einzahlung_tellers.setInt(1, delta);
@@ -25,6 +25,7 @@ public class Einzahlung {
 			stmt.einzahlung_balance.setInt(1, accid);
 			ResultSet result = stmt.einzahlung_balance.executeQuery();
 			result.next();
+			int endresult=result.getInt(1);
 			
 			//"INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);"
 			stmt.einzahlung_history.setInt(1, accid);
@@ -35,7 +36,7 @@ public class Einzahlung {
 			stmt.einzahlung_history.setString(6, "abcdefghijklmnopqrstuvwxvzabcd");
 			stmt.einzahlung_history.executeUpdate();
 			
-			return result.getInt(1);
+			return endresult;
 		}
 		catch (Exception e) {
 		e.printStackTrace();
