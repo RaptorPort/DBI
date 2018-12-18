@@ -6,10 +6,11 @@ import java.sql.ResultSet;
 
 public class Analyse {
 	
-	public static int start (Connection conn, int delta){
+	public static int start (Connection conn, StoredStatement stmt, int delta){
 	try {
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM history WHERE delta =" +delta+ ";");
-		ResultSet result = stmt.executeQuery();
+		//"SELECT * FROM history WHERE delta = ?;"
+		stmt.analyse.setInt(1, delta);
+		ResultSet result = stmt.analyse.executeQuery();
 		int Anzahl = 0;
 		while(result.next())
 			Anzahl++;

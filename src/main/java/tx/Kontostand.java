@@ -6,9 +6,10 @@ import java.sql.PreparedStatement;
 
 public class Kontostand {
 	
-	public static int start (Connection conn, int accid) {
+	public static int start (Connection conn, PreparedStatement stmt, int accid) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE accid = "+accid+";");
+			//"SELECT balance FROM accounts WHERE accid = ?;"
+			stmt.setInt(1, accid);
 			ResultSet result = stmt.executeQuery();
 			result.next();
 			return result.getInt(1);

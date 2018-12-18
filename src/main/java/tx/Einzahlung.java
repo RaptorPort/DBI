@@ -4,29 +4,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class Einzahlung {
-	public static int start (Connection conn, int accid, int tellerid, int branchid, int delta) {
+	public static int start (Connection conn, StoredStatement stmt, int accid, int tellerid, int branchid, int delta) {
 		try
-		{
+		{			
+			//"UPDATE branches SET balance = balance + ? WHERE branchid = ?;"
+			stmt.einzahlung_branches.setInt(1, delta);
+			stmt.einzahlung_branches.setInt(2, branchid);
+			stmt.einzahlung_branches.executeQuery();
 			
-			PreparedStatement stmt = conn.prepareStatement("UPDATE branches SET balance = balance + "+delta+" WHERE branchid = "+branchid+";");
-			stmt.executeUpdate();
+			//"UPDATE tellers SET balance = balance + ? WHERE tellerid = ?;"
+			stmt.einzahlung_tellers.setInt(1, delta);
+			stmt.einzahlung_tellers.setInt(2, tellerid);
+			stmt.einzahlung_tellers.executeUpdate();
 			
-			stmt = conn.prepareStatement("UPDATE tellers SET balance = balance + "+delta+" WHERE tellerid = "+tellerid+";");
-			stmt.executeUpdate();
+			//"UPDATE accounts SET balance = balance + ? WHERE accid = ? ;"
+			stmt.einzahlung_accounts.setInt(1, delta);
+			stmt.einzahlung_tellers.setInt(2, accid);
+			stmt.einzahlung_tellers.executeUpdate();
 			
-			stmt = conn.prepareStatement("UPDATE accounts SET balance = balance + "+delta+" WHERE accid = "+accid+";");
-			stmt.executeUpdate();
-			stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE accid = "+accid+";");
-			ResultSet result = stmt.executeQuery();
+			//"SELECT balance FROM accounts WHERE accid = ?;"	
+			stmt.einzahlung_balance.setInt(1, accid);
+			ResultSet result = stmt.einzahlung_balance.executeQuery();
 			result.next();
 			
-			stmt = conn.prepareStatement("INSERT INTO history VALUES ("+accid+", "+tellerid+", "+delta+" , "+branchid+" , " +result.getInt(1)+","
-					+ "'abcdefghijklmnopqrstuvwxvzabcd');");
+			//"INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);"
+			stmt.einzahlung_history.setInt(1, accid);
+			stmt.einzahlung_history.setInt(2, tellerid);
+			stmt.einzahlung_history.setInt(3, delta);
+			stmt.einzahlung_history.setInt(4, branchid);
+			stmt.einzahlung_history.setInt(5, result.getInt(1));
+			stmt.einzahlung_history.setString(6, "abcdefghijklmnopqrstuvwxvzabcd");
+			stmt.einzahlung_history.executeUpdate();
 			
-			stmt.executeUpdate();
 			return result.getInt(1);
 		}
-		
 		catch (Exception e) {
 		e.printStackTrace();
 		return 0;
