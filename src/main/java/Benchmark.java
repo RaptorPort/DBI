@@ -48,6 +48,7 @@ public class Benchmark {
 				
 			}
 			System.out.println("End Result #Operations: " + sumOps);
+			System.out.println("Ops/sec: " + (double)sumOps/(double)300);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -22,7 +22,7 @@ public class StoredProcedure {
 			
 			stmt.execute("CREATE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
 					"BEGIN " + 
-					"SELECT balance INTO bala FROM accounts WHERE accid = id; " + 
+					"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT id,1; " + 
 					"END");
 			
 			cstmt_Kontostand = conn.prepareCall("call Kontostand_tx (?,?)");
@@ -32,11 +32,11 @@ public class StoredProcedure {
 			stmt.execute("CREATE PROCEDURE `Einzahlung_tx` "
 					+ "(IN accIN int, IN tellerIN int, IN branchIN int, IN delta int, IN cmnt char(30), OUT balance_out int)\n"
 					+ "BEGIN\n"
-					+ "UPDATE tellers SET balance = balance + delta WHERE tellerid = tellerIN;\n"
-					+ "UPDATE accounts SET balance = balance + delta WHERE accid = accIN ;\n"
-					+ "SELECT balance INTO balance_out FROM accounts WHERE accid = accIN;\n"
+					+ "UPDATE tellers SET balance = balance + delta WHERE tellerid = tellerIN LIMIT 1;\n"
+					+ "UPDATE accounts SET balance = balance + delta WHERE accid = accIN LIMIT 1;\n"
+					+ "SELECT balance INTO balance_out FROM accounts WHERE accid = accIN LIMIT 1;\n"
 					+ "INSERT INTO history VALUES (accIN, tellerIN, delta , branchIN , balance_out, cmnt);\n" 
-					+ "UPDATE branches SET balance = balance + delta WHERE branchid = branchIN;\n"
+					+ "UPDATE branches SET balance = balance + delta WHERE branchid = branchIN LIMIT 1;\n"
 					+ "END");
 			
 			cstmt_Einzahlung = conn.prepareCall("call Einzahlung_tx (?,?,?,?,?,?)");
