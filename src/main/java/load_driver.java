@@ -19,6 +19,7 @@ public class load_driver extends Thread {
 	StoredProcedure stmt;
 	int rndmInit;
 	int opCounter = 0;
+	int testCounter = 0;
 	long messzeit = 0;
 	State state = EINSCHWINGPHASE;
 	
@@ -42,9 +43,13 @@ public class load_driver extends Thread {
 			//Load-Driver Schleife 10min = 600000ms
 			while (System.currentTimeMillis()-startTime <= 600000) {
 				//Einschwingphase
-				if (state == EINSCHWINGPHASE && System.currentTimeMillis()-startTime >= 240000) {
-					endEinschwingphase = System.currentTimeMillis();
-					state = MESSPHASE;
+				if (state == EINSCHWINGPHASE) {
+					testCounter++;
+					if (System.currentTimeMillis()-startTime >= 240000 ) {
+						endEinschwingphase = System.currentTimeMillis();
+						System.out.println("Einschwing #Ops: " + testCounter + "\tper sec: " + (double)testCounter/(double)240);
+						state = MESSPHASE;
+					}
 				}
 					
 				int rndm = rand.nextInt(100) + 1;
