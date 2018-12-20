@@ -65,9 +65,9 @@ public class Benchmark {
 				timeAn += ld.timeAn;
 			}
 			System.out.println("Analysis of each Statement: ");
-			System.out.println("Kontostand #Ops: " + opKonto + "\tsec: " + timeKonto/1000 + "\tops/sec: " + (double)opKonto/(double)timeKonto);
-			System.out.println("Einzahlung #Ops: " + opEin + "\tsec: " + timeEin/1000 + "\tops/sec: " + (double)opEin/(double)timeEin);
-			System.out.println("Einzahlung #Ops: " + opAn + "\tsec: " + timeAn/1000 + "\tops/sec: " + (double)opAn/(double)timeAn);
+			System.out.println("Kontostand #Ops: " + opKonto + "\tsec: " + timeKonto/1000 + "\tops/sec: " + (double)opKonto/(double)timeKonto*1000);
+			System.out.println("Einzahlung #Ops: " + opEin + "\tsec: " + timeEin/1000 + "\tops/sec: " + (double)opEin/(double)timeEin*1000);
+			System.out.println("Analyse #Ops: " + opAn + "\tsec: " + timeAn/1000 + "\tops/sec: " + (double)opAn/(double)timeAn*1000);
 			
 			System.out.println("End Result #Operations: " + sumOps);
 			System.out.println("Ops/sec: " + (double)sumOps/(double)300);

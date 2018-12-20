@@ -25,9 +25,9 @@ public class StoredProcedure {
 			Statement stmt;
 			//Kontostand
 			stmt = conn.createStatement();
-			stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
+			//stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
 			
-			stmt.execute("CREATE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
+			stmt.execute("CREATE OR REPLACE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
 					"BEGIN " + 
 					"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT id,1; " + 
 					"END");
@@ -35,8 +35,8 @@ public class StoredProcedure {
 			cstmt_Kontostand = conn.prepareCall("call Kontostand_tx (?,?)");
 			//Einzahlung
 			stmt = conn.createStatement();
-			stmt.execute("DROP PROCEDURE IF EXISTS `Einzahlung_tx`;");
-			stmt.execute("CREATE PROCEDURE `Einzahlung_tx` "
+			//stmt.execute("DROP PROCEDURE IF EXISTS `Einzahlung_tx`;");
+			stmt.execute("CREATE OR REPLACE PROCEDURE `Einzahlung_tx` "
 					+ "(IN accIN int, IN tellerIN int, IN branchIN int, IN delta int, IN cmnt char(30), OUT balance_out int)\n"
 					+ "BEGIN\n"
 					+ "UPDATE tellers SET balance = balance + delta WHERE tellerid = tellerIN LIMIT 1;\n"
@@ -49,9 +49,9 @@ public class StoredProcedure {
 			cstmt_Einzahlung = conn.prepareCall("call Einzahlung_tx (?,?,?,?,?,?)");
 			//Analyse
 			stmt = conn.createStatement();
-			stmt.execute("DROP PROCEDURE IF EXISTS `Analyse_tx`;");
+			//stmt.execute("DROP PROCEDURE IF EXISTS `Analyse_tx`;");
 			
-			stmt.execute("CREATE PROCEDURE `Analyse_tx` (IN deltaIN int, OUT anz int)\n"
+			stmt.execute("CREATE OR REPLACE PROCEDURE `Analyse_tx` (IN deltaIN int, OUT anz int)\n"
 					+ "BEGIN\n"
 					+ "SELECT COUNT(accid) INTO anz FROM history WHERE delta = deltaIN;\n"
 					+ "END");
@@ -91,7 +91,8 @@ public class StoredProcedure {
 	
 	public int Analyse_tx(Connection conn, int accid) throws SQLException {
 		long start = System.currentTimeMillis();
-		cstmt_Analyse.setInt(1, 101);
+		opAn++;
+		cstmt_Analyse.setInt(1, accid);
 		cstmt_Analyse.registerOutParameter(2, Types.INTEGER);
 		cstmt_Analyse.execute();
 		conn.commit();
