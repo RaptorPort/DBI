@@ -40,6 +40,7 @@ public class Benchmark {
 				load_driver temp = new load_driver(conn, stmt, rand.nextInt());
 				temp.start();
 				threads.add(temp);
+				procstats.add(stmt);
 			}
 			for (load_driver ld : threads) {
 				ld.join();
