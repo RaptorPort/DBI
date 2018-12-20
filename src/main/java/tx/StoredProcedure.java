@@ -25,15 +25,17 @@ public class StoredProcedure {
 			Statement stmt;
 			//Kontostand
 			stmt = conn.createStatement();
+			/*
 			stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
 			
 			stmt.execute("CREATE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
 					"BEGIN " + 
 					"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT id,1; " + 
 					"END");
-			
+			*/
 			cstmt_Kontostand = conn.prepareCall("call Kontostand_tx (?,?)");
 			//Einzahlung
+			/*
 			stmt = conn.createStatement();
 			stmt.execute("DROP PROCEDURE IF EXISTS `Einzahlung_tx`;");
 			stmt.execute("CREATE PROCEDURE `Einzahlung_tx` "
@@ -45,17 +47,18 @@ public class StoredProcedure {
 					+ "INSERT INTO history VALUES (accIN, tellerIN, delta , branchIN , balance_out, cmnt);\n" 
 					+ "UPDATE branches SET balance = balance + delta WHERE branchid = branchIN LIMIT 1;\n"
 					+ "END");
-			
+			*/
 			cstmt_Einzahlung = conn.prepareCall("call Einzahlung_tx (?,?,?,?,?,?)");
 			//Analyse
 			stmt = conn.createStatement();
+			/*
 			stmt.execute("DROP PROCEDURE IF EXISTS `Analyse_tx`;");
 			
 			stmt.execute("CREATE PROCEDURE `Analyse_tx` (IN deltaIN int, OUT anz int)\n"
 					+ "BEGIN\n"
 					+ "SELECT COUNT(accid) INTO anz FROM history WHERE delta = deltaIN;\n"
 					+ "END");
-			
+			*/
 			cstmt_Analyse = conn.prepareCall("call Analyse_tx (?,?)");
 		} catch (SQLException e) {
 			e.printStackTrace();
