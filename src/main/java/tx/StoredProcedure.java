@@ -13,6 +13,13 @@ public class StoredProcedure {
 	CallableStatement cstmt_Einzahlung;
 	CallableStatement cstmt_Analyse;
 	
+	public int opEin = 0;
+	public long timeEin = 0;
+	public int opKonto = 0;
+	public long timeKonto = 0;
+	public int opAn = 0;
+	public long timeAn = 0;
+	
 	public void init(Connection conn) {
 		try {
 			Statement stmt;
@@ -56,14 +63,19 @@ public class StoredProcedure {
 	}
 	
 	public int Kontostand_tx(Connection conn, int accid) throws SQLException {
+		long start = System.currentTimeMillis();
+		opKonto++;
 		cstmt_Kontostand.setInt(1, 127);
 		cstmt_Kontostand.registerOutParameter(2, Types.INTEGER);
 		cstmt_Kontostand.execute();
 		
+		timeKonto += System.currentTimeMillis()-start;
 		return cstmt_Kontostand.getInt(2);
 	}
 	
 	public int Einzahlung_tx(Connection conn, int accid, int tellerid, int branchid, int delta) throws SQLException {
+		long start = System.currentTimeMillis();
+		opEin++;
 		cstmt_Einzahlung.setInt(1, accid); 
 		cstmt_Einzahlung.setInt(2, tellerid); 
 		cstmt_Einzahlung.setInt(3, branchid);
@@ -72,14 +84,19 @@ public class StoredProcedure {
 		cstmt_Einzahlung.registerOutParameter(6, Types.INTEGER);
 		cstmt_Einzahlung.execute();
 		conn.commit();
+		
+		timeEin += System.currentTimeMillis()-start;
 		return cstmt_Einzahlung.getInt(6); //<<--balance 
 	}
 	
 	public int Analyse_tx(Connection conn, int accid) throws SQLException {
+		long start = System.currentTimeMillis();
 		cstmt_Analyse.setInt(1, 101);
 		cstmt_Analyse.registerOutParameter(2, Types.INTEGER);
 		cstmt_Analyse.execute();
 		conn.commit();
+		
+		timeAn += System.currentTimeMillis()-start;
 		return cstmt_Analyse.getInt(2);
 	}
 }
