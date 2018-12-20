@@ -34,7 +34,7 @@ public class Benchmark {
 			for (int i = 0; i < 5; i++) {
 				StoredStatement stmt=new StoredStatement();
 				stmt.initAll(conn);
-				load_driver temp = new load_driver(conn, stmt, rand.nextInt());
+				load_driver temp = new load_driver(stmt, rand.nextInt());
 				temp.start();
 				threads.add(temp);
 			}
