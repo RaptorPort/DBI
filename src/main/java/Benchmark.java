@@ -33,6 +33,7 @@ public class Benchmark {
 			Random rand = new Random();	
 			
 			ArrayList<load_driver> threads = new ArrayList<load_driver>();
+			ArrayList<StoredProcedure> procstats = new ArrayList<StoredProcedure>();
 			for (int i = 0; i < 5; i++) {
 				StoredProcedure stmt=new StoredProcedure();
 				stmt.init(conn);
@@ -47,6 +48,26 @@ public class Benchmark {
 				sumOps += ld.opCounter;
 				
 			}
+			
+			int opEin = 0;
+			long timeEin = 0;
+			int opKonto = 0;
+			long timeKonto = 0;
+			int opAn = 0;
+			long timeAn = 0;
+			for (StoredProcedure ld : procstats) {
+				opEin += ld.opEin;
+				timeEin += ld.timeEin;
+				opKonto += ld.opKonto;
+				timeKonto += ld.timeKonto;
+				opAn += ld.opAn;
+				timeAn += ld.timeAn;
+			}
+			System.out.println("Analysis of each Statement: ");
+			System.out.println("Kontostand #Ops: " + opKonto + "\tsec: " + timeKonto/1000 + "\tops/sec: " + (double)opKonto/(double)timeKonto);
+			System.out.println("Einzahlung #Ops: " + opEin + "\tsec: " + timeEin/1000 + "\tops/sec: " + (double)opEin/(double)timeEin);
+			System.out.println("Einzahlung #Ops: " + opAn + "\tsec: " + timeAn/1000 + "\tops/sec: " + (double)opAn/(double)timeAn);
+			
 			System.out.println("End Result #Operations: " + sumOps);
 			System.out.println("Ops/sec: " + (double)sumOps/(double)300);
 			
