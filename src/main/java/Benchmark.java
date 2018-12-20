@@ -11,10 +11,11 @@ import tx.StoredProcedure;
 import tx.StoredStatement;
 
 public class Benchmark {
+	static ArrayList<Connection> conns;
 
 	private static final String USERNAME = "dbi";
 	private static final String PASSWORD = "dbi_pass";
-	private static final String CONN_STRING = "jdbc:mysql://192.168.122.117/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
+	private static final String CONN_STRING = "jdbc:mysql://192.168.122.54/test?allowLoadLocalInfile=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"
 			+"&sessionVariables=unique_checks=0,foreign_key_checks=0&useCompression=true"; //Session Variablen setzen
 	
 	public static void main(String[] args) throws SQLException, InterruptedException {
@@ -23,24 +24,35 @@ public class Benchmark {
 		try {
 			conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
 			conn.setAutoCommit(false);
-			System.out.println("Connected!");
-			
+			System.out.println("Connected main...");
 						
 			clear_history_tbl(conn);
 			
+			if (conn != null) {
+				conn.close();
+				System.out.println("Closed main...");
+			}
+				
 			int sumOps = 0;
 			long sumTime = 0;
 			Random rand = new Random();	
 			
 			ArrayList<load_driver> threads = new ArrayList<load_driver>();
 			ArrayList<StoredProcedure> procstats = new ArrayList<StoredProcedure>();
+			conns = new ArrayList<Connection>();
 			for (int i = 0; i < 5; i++) {
+				Connection connt = null; 
+			
+				connt = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
+				connt.setAutoCommit(false);
+				System.out.println("Connected!");
 				StoredProcedure stmt=new StoredProcedure();
-				stmt.init(conn);
-				load_driver temp = new load_driver(conn, stmt, rand.nextInt());
+				stmt.init(connt);
+				load_driver temp = new load_driver(connt, stmt, rand.nextInt());
 				temp.start();
 				threads.add(temp);
 				procstats.add(stmt);
+				conns.add(connt);
 			}
 			for (load_driver ld : threads) {
 				ld.join();
@@ -78,7 +90,12 @@ public class Benchmark {
 		finally {
 			if (conn != null) {
 				conn.close();
-				System.out.println("Connection Closed!");
+				for (Connection t : conns) {
+					if (t != null) {
+						t.close();
+						System.out.println("Connection Closed!");
+					}
+				}
 			}
 		}		
 	}
