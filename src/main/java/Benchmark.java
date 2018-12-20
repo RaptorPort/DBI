@@ -27,6 +27,8 @@ public class Benchmark {
 			System.out.println("Connected main...");
 						
 			clear_history_tbl(conn);
+			//StoredProcedure tempstmt=new StoredProcedure();
+			//tempstmt.createProc(conn);
 			
 			if (conn != null) {
 				conn.close();

@@ -39,18 +39,18 @@ public class StoredProcedure {
 		stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
 		stmt.execute("CREATE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
 				"BEGIN " + 
-				"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT 1; " + 
+				"SELECT balance INTO bala FROM accounts WHERE accid = id; " + 
 				"END");
 		
 		stmt.execute("DROP PROCEDURE IF EXISTS `Einzahlung_tx`;");
 		stmt.execute("CREATE PROCEDURE `Einzahlung_tx` "
 				+ "(IN accIN int, IN tellerIN int, IN branchIN int, IN delta int, IN cmnt char(30), OUT balance_out int)\n"
 				+ "BEGIN\n"
-				+ "UPDATE tellers SET balance = balance + delta WHERE tellerid = tellerIN LIMIT 1;\n"
-				+ "UPDATE accounts SET balance = balance + delta WHERE accid = accIN LIMIT 1;\n"
-				+ "SELECT balance INTO balance_out FROM accounts WHERE accid = accIN LIMIT 1;\n"
+				+ "UPDATE tellers SET balance = balance + delta WHERE tellerid = tellerIN;\n"
+				+ "UPDATE accounts SET balance = balance + delta WHERE accid = accIN;\n"
+				+ "SELECT balance INTO balance_out FROM accounts WHERE accid = accIN;\n"
 				+ "INSERT INTO history VALUES (accIN, tellerIN, delta , branchIN , balance_out, cmnt);\n" 
-				+ "UPDATE branches SET balance = balance + delta WHERE branchid = branchIN LIMIT 1;\n"
+				+ "UPDATE branches SET balance = balance + delta WHERE branchid = branchIN;\n"
 				+ "END");
 
 		stmt.execute("DROP PROCEDURE IF EXISTS `Analyse_tx`;");
