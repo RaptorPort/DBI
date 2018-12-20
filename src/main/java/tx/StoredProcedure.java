@@ -39,7 +39,7 @@ public class StoredProcedure {
 		stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
 		stmt.execute("CREATE PROCEDURE `Kontostand_tx` (IN id int, OUT bala int) " + 
 				"BEGIN " + 
-				"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT id,1; " + 
+				"SELECT balance INTO bala FROM accounts WHERE accid = id LIMIT 1; " + 
 				"END");
 		
 		stmt.execute("DROP PROCEDURE IF EXISTS `Einzahlung_tx`;");
