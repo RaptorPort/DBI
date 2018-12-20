@@ -63,7 +63,7 @@ public class StoredProcedure {
 	public int Kontostand_tx(Connection conn, int accid) throws SQLException {
 		long start = System.currentTimeMillis();
 		opKonto++;
-		cstmt_Kontostand.setInt(1, 127);
+		cstmt_Kontostand.setInt(1, accid);
 		cstmt_Kontostand.registerOutParameter(2, Types.INTEGER);
 		cstmt_Kontostand.execute();
 		
