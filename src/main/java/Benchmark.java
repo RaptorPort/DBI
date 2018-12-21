@@ -38,7 +38,7 @@ public class Benchmark {
 				StoredProcedure stmt = new StoredProcedure();
 				stmt.init(connt);	//init Procedures for connection
 				//create load_driver with connection, procedures and a random number as seed
-				load_driver temp = new load_driver(connt, stmt, rand.nextInt());
+				load_driver temp = new load_driver(stmt, rand.nextInt());
 				temp.start();
 				System.out.println("Connected and started thread " + temp.getId() + "!");
 				threads.add(temp);
