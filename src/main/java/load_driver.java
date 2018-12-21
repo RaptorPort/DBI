@@ -40,12 +40,12 @@ public class load_driver extends Thread {
 			while (System.currentTimeMillis()-startTime <= 600000) {
 				int rndm = rand.nextInt(100) + 1;
 				if (rndm <= 35) {
-					stmt.Kontostand_tx(rand.nextInt(10000000));
+					stmt.kontostand_tx(rand.nextInt(10000000));
 				} else if (rndm <= 85) {
-					stmt.Einzahlung_tx(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, 
+					stmt.einzahlung_tx(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, 
 							rand.nextInt(100)+1, rand.nextInt(10000)+1);
 				} else {
-					stmt.Analyse_tx(rand.nextInt(10000)+1);
+					stmt.analyse_tx(rand.nextInt(10000)+1);
 				}
 				if (state == EINSCHWINGPHASE) {
 					testCounter++;	//count ops during EINSCHWINGPHASE

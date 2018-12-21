@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StoredStatement {
+public class preparedStatement {
 	Connection conn;
 	PreparedStatement einzahlung_tellers;
 	PreparedStatement einzahlung_accounts;
@@ -16,11 +16,11 @@ public class StoredStatement {
 	PreparedStatement analyse;
 	PreparedStatement kontostand;
 	
-	public StoredStatement() {
+	public preparedStatement() {
 		System.out.println("Creation of PreparedStatements");
 	}
 	
-	public void initAll(Connection conn) {
+	public void init(Connection conn) {
 		this.conn = conn;
 		initEinzahlung();
 		initKontostand();
@@ -30,11 +30,16 @@ public class StoredStatement {
 	public void initEinzahlung() {
 		try {
 		//Einzahlung
-		einzahlung_tellers = conn.prepareStatement("UPDATE tellers SET balance = balance + ? WHERE tellerid = ?;");
-		einzahlung_accounts = conn.prepareStatement("UPDATE accounts SET balance = balance + ? WHERE accid = ? ;");
-		einzahlung_balance = conn.prepareStatement("SELECT balance FROM accounts WHERE accid = ?;");		
-		einzahlung_history = conn.prepareStatement("INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);");
-		einzahlung_branches = conn.prepareStatement("UPDATE branches SET balance = balance + ? WHERE branchid = ?;");
+		einzahlung_tellers = conn.prepareStatement(
+				"UPDATE tellers SET balance = balance + ? WHERE tellerid = ?;");
+		einzahlung_accounts = conn.prepareStatement(
+				"UPDATE accounts SET balance = balance + ? WHERE accid = ? ;");
+		einzahlung_balance = conn.prepareStatement(
+				"SELECT balance FROM accounts WHERE accid = ?;");		
+		einzahlung_history = conn.prepareStatement(
+				"INSERT INTO history VALUES (?, ?, ? , ? , ?, ?);");
+		einzahlung_branches = conn.prepareStatement(
+				"UPDATE branches SET balance = balance + ? WHERE branchid = ?;");
 		} catch (SQLException e) {
 			System.out.println("Initialisation of PreparedStatements faulty! (initEinzahlung)");
 			e.printStackTrace();
@@ -60,7 +65,7 @@ public class StoredStatement {
 		}
 	}
 	
-	public int analyse (int delta){
+	public int analyse_tx(int delta){
 		try {
 			//"SELECT COUNT(accid) FROM history WHERE delta = ?"
 			analyse.setInt(1, delta);
@@ -75,7 +80,7 @@ public class StoredStatement {
 		
 		}
 	
-	public int einzahlung (int accid, int tellerid, int branchid, int delta) {
+	public int einzahlung_tx(int accid, int tellerid, int branchid, int delta) {
 		try
 		{			
 			//"UPDATE branches SET balance = balance + ? WHERE branchid = ?;"
@@ -117,7 +122,7 @@ public class StoredStatement {
 		}
 	}
 	
-	public int kontostand (int accid) {
+	public int kontostand_tx(int accid) {
 		try {
 			//"SELECT balance FROM accounts WHERE accid = ?;"
 			kontostand.setInt(1, accid);

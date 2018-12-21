@@ -62,7 +62,7 @@ public class StoredProcedure {
 				+ "END");
 	}
 	
-	public int Kontostand_tx(int accid) throws SQLException {
+	public int kontostand_tx(int accid) throws SQLException {
 		long start = System.currentTimeMillis();
 		opKonto++;
 		cstmt_Kontostand.setInt(1, accid);
@@ -73,7 +73,7 @@ public class StoredProcedure {
 		return cstmt_Kontostand.getInt(2);
 	}
 	
-	public int Einzahlung_tx(int accid, int tellerid, int branchid, int delta) throws SQLException {
+	public int einzahlung_tx(int accid, int tellerid, int branchid, int delta) throws SQLException {
 		long start = System.currentTimeMillis();
 		opEin++;
 		cstmt_Einzahlung.setInt(1, accid); 
@@ -89,7 +89,7 @@ public class StoredProcedure {
 		return cstmt_Einzahlung.getInt(6); //<<--balance 
 	}
 	
-	public int Analyse_tx(int accid) throws SQLException {
+	public int analyse_tx(int accid) throws SQLException {
 		long start = System.currentTimeMillis();
 		opAn++;
 		cstmt_Analyse.setInt(1, accid);
