@@ -34,7 +34,6 @@ public class load_driver extends Thread {
 		long startTime = 0;
 		long endEinschwingphase = 0;
 		long endMessphase = 0;
-		long endAusschwingphase = 0;
 		
 		try {
 		System.out.println("Starting Benchmark!");
@@ -76,7 +75,6 @@ public class load_driver extends Thread {
 				//wait 50ms
 				Thread.sleep(50);
 			}
-			endAusschwingphase = System.currentTimeMillis();
 			//Auswertung
 			messzeit = endMessphase-endEinschwingphase;
 			System.out.println("Thread: " + Thread.currentThread().getId() + "Messzeit: " + messzeit 
