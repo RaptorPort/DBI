@@ -15,63 +15,55 @@ public class load_driver extends Thread {
 	static final State MESSPHASE = State.MESSPHASE;
 	static final State AUSSCHWINGPHASE = State.AUSSCHWINGPHASE;
 	
+	State state = EINSCHWINGPHASE;
 	StoredProcedure stmt;
-	int rndmInit;
+	Random rand;
+	//Benchmark result vars
 	int opCounter = 0;
 	int testCounter = 0;
 	long messzeit = 0;
-	State state = EINSCHWINGPHASE;
 	
 	public load_driver(StoredProcedure stmt, int rndmInit) {
-		this.rndmInit = rndmInit;
+		rand = new Random(rndmInit);	
 		this.stmt = stmt;
 	}
 	
-	public void run() {
-		Random rand = new Random(rndmInit);	
+	public void run() {	
 		long startTime = 0;
 		long endEinschwingphase = 0;
 		long endMessphase = 0;
 		
 		try {
 		System.out.println("Starting Benchmark!");
-			startTime = System.currentTimeMillis(); //start measuring time
-			
+			startTime = System.currentTimeMillis(); //start measuring time		
 			//Load-Driver Schleife 10min = 600000ms
 			while (System.currentTimeMillis()-startTime <= 600000) {
-				//Einschwingphase
-				if (state == EINSCHWINGPHASE) {
-					testCounter++;
-					if (System.currentTimeMillis()-startTime >= 240000 ) {
-						endEinschwingphase = System.currentTimeMillis();
-						System.out.println("Einschwing #Ops: " + testCounter + "\tper sec: " + (double)testCounter/(double)240);
-						state = MESSPHASE;
-					}
-				}
-					
 				int rndm = rand.nextInt(100) + 1;
 				if (rndm <= 35) {
-					//Kontostand
 					stmt.Kontostand_tx(rand.nextInt(10000000));
 				} else if (rndm <= 85) {
-					//Einzahlung
-					stmt.Einzahlung_tx(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, rand.nextInt(100)+1, rand.nextInt(10000)+1);
-					
+					stmt.Einzahlung_tx(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, 
+							rand.nextInt(100)+1, rand.nextInt(10000)+1);
 				} else {
-					//Analyse
 					stmt.Analyse_tx(rand.nextInt(10000)+1);
 				}
-				
-				//Messphase
+				if (state == EINSCHWINGPHASE) {
+					testCounter++;	//count ops during EINSCHWINGPHASE
+					if (System.currentTimeMillis()-startTime >= 240000 ) {
+						endEinschwingphase = System.currentTimeMillis();
+						System.out.println("Einschwing #Ops: " + testCounter + "\tper sec: " 
+						+ (double)testCounter/(double)240);
+						state = MESSPHASE;	//4min have passed -> start Messphase
+					}
+				}
 				if(state == MESSPHASE) {
 					opCounter++;
 					if (System.currentTimeMillis()-endEinschwingphase >= 300000) {
-						state = AUSSCHWINGPHASE;
+						state = AUSSCHWINGPHASE;	//5min have passed -> end Messphase
 						endMessphase = System.currentTimeMillis();
 					}
 				}
-				//wait 50ms
-				Thread.sleep(50);
+				Thread.sleep(50);	//wait 50ms
 			}
 			//Auswertung
 			messzeit = endMessphase-endEinschwingphase;
@@ -81,6 +73,6 @@ public class load_driver extends Thread {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		return;			
+		return;	//Benchmark done -> close Thread		
 	}
 }
