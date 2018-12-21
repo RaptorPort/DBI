@@ -33,7 +33,7 @@ public class StoredProcedure {
 		}	
 	}
 	
-	public void createProc(Connection conn) throws SQLException {
+	public void createProcedure(Connection conn) throws SQLException {
 		Statement stmt = conn.createStatement();
 	
 		stmt.execute("DROP PROCEDURE IF EXISTS `Kontostand_tx`;");
