@@ -15,15 +15,14 @@ public class load_driver extends Thread {
 	static final State MESSPHASE = State.MESSPHASE;
 	static final State AUSSCHWINGPHASE = State.AUSSCHWINGPHASE;
 	
-
-	StoredStatement stmt;
+	StoredProcedure stmt;
 	int rndmInit;
 	int opCounter = 0;
 	int testCounter = 0;
 	long messzeit = 0;
 	State state = EINSCHWINGPHASE;
 	
-	public load_driver(StoredStatement stmt, int rndmInit) {
+	public load_driver(StoredProcedure stmt, int rndmInit) {
 		this.rndmInit = rndmInit;
 		this.stmt = stmt;
 	}
@@ -53,14 +52,14 @@ public class load_driver extends Thread {
 				int rndm = rand.nextInt(100) + 1;
 				if (rndm <= 35) {
 					//Kontostand
-					stmt.kontostand(rand.nextInt(10000000));
+					stmt.Kontostand_tx(rand.nextInt(10000000));
 				} else if (rndm <= 85) {
 					//Einzahlung
-					stmt.einzahlung(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, rand.nextInt(100)+1, rand.nextInt(10000)+1);
+					stmt.Einzahlung_tx(rand.nextInt(10000000)+1, rand.nextInt(1000)+1, rand.nextInt(100)+1, rand.nextInt(10000)+1);
 					
 				} else {
 					//Analyse
-					stmt.analyse(rand.nextInt(10000)+1);
+					stmt.Analyse_tx(rand.nextInt(10000)+1);
 				}
 				
 				//Messphase
