@@ -91,7 +91,8 @@ public class StoredProcedure {
 	
 	public int Analyse_tx(int accid) throws SQLException {
 		long start = System.currentTimeMillis();
-		cstmt_Analyse.setInt(1, 101);
+		opAn++;
+		cstmt_Analyse.setInt(1, accid);
 		cstmt_Analyse.registerOutParameter(2, Types.INTEGER);
 		cstmt_Analyse.execute();
 		
